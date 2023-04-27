@@ -1,31 +1,56 @@
 const { Schema, model } = require("mongoose");
 
-// TODO: Please make sure you edit the User model to whatever makes sense in this case
-const userSchema = new Schema(
-  {
-    username: {
-      type: String,
-      trim: true,
-      required: false,
-      unique: true,
-    },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      trim: true,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
+const userSchema = new Schema({
+  username: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true,
+    minlength: 3,
   },
-  {
-    // this second object adds extra properties: `createdAt` and `updatedAt`
-    timestamps: true,
-  }
-);
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  age: {
+    type: Number,
+    required: false,
+  },
+  weight: {
+    type: Number,
+    required: false,
+  },
+  height: {
+    type: Number,
+    required: false,
+  },
+  gender: {
+    type: String,
+    required: false,
+    enum: ["male", "female", "other"],
+  },
+  // Not sure how to implement pics yet
+  profilePic: {
+    type: String,
+    required: false,
+  },
+  bio: {
+    type: String,
+    required: false,
+  },
+  // This is the array of workouts that the user has created
+  workouts: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Workout",
+    },
+  ],
+});
 
 const User = model("User", userSchema);
 
