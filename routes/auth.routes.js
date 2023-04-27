@@ -72,4 +72,12 @@ router.get("/profile", isLoggedIn, (req, res, next) => {
   res.render("auth/profile")
 })
 
+/* --- 6. GET: logout request --- */
+router.get('/logout', (req, res, next) => {
+  req.session.destroy(err => {
+    if (err) next(err)
+    res.redirect('/')
+  })
+})
+
 module.exports = router;
