@@ -15,11 +15,9 @@ router.get("/signup", (req, res, next) => {
 /* --- 2. POST: signup page --- */
 router.post("/signup", validateSignupInput, async (req, res, next) => {
   try {
-    const potentialUser = await User.findOne({ username: req.body.username });
+    const isExistingUser = await User.findOne({ username: req.body.username });
 
-    if (!!potentialUser === false) {
-      const pwdStrength = pwdRegex.test(req.body.password);
-
+    if (!isExistingUser) {
       if (pwdRegex.test(req.body.password)) {
         const salt = bcryptjs.genSaltSync(roundOfSalt);
         const passwordHash = bcryptjs.hashSync(req.body.password, salt);
@@ -46,16 +44,16 @@ router.get("/login", (req, res, next) => {
   res.render("auth/login");
 });
 
-/* --- 4. GET: login page --- */
+/* --- 4. POST: login page --- */
 router.post("/login", async (req, res, next) => {
   const { username, password } = req.body;
 
   try {
-    const loginUser = await User.findOne({ username });
+    const isExistingUser = await User.findOne({ username });
 
-    if (!!loginUser === true) {
-      if (bcryptjs.compareSync(password, loginUser.password)) {
-        req.session.currentUser = loginUser;
+    if (isExistingUser) {
+      if (bcryptjs.compareSync(password, isExistingUser.password)) {
+        req.session.loggedInUser = isExistingUser;
         res.redirect("/"); // change the path to profile page once profile page is done
       } else {
         res.render("auth/login", { username });
@@ -67,5 +65,4 @@ router.post("/login", async (req, res, next) => {
     console.log("Error from login post: ", error);
   }
 });
-
 module.exports = router;

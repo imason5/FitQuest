@@ -5,9 +5,12 @@ const redirectIf = (condition, redirectPath) => (req, res, next) => {
   next();
 };
 
-const isLoggedIn = redirectIf((req) => !req.session.currentUser, "/auth/login");
+const isLoggedIn = redirectIf(
+  (req) => !req.session.loggedInUser,
+  "/auth/login"
+);
 
-const isLoggedOut = redirectIf((req) => req.session.currentUser, "/");
+const isLoggedOut = redirectIf((req) => req.session.loggedInUser, "/");
 
 module.exports = {
   isLoggedIn,
