@@ -1,5 +1,6 @@
 const { Schema, model } = require("mongoose");
 
+// ExerciseLog model should store the specific details of a user's performance in a particular workout session.
 const exerciseLogSchema = new Schema({
   workoutId: {
     type: mongoose.Schema.Types.ObjectId,

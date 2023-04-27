@@ -1,5 +1,6 @@
 const { Schema, model } = require("mongoose");
 
+// Exercise model should describe the general characteristics of an exercise
 const exerciseSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -51,18 +52,6 @@ const exerciseSchema = new mongoose.Schema({
   instructions: {
     type: String,
     required: true,
-  },
-  reps: {
-    type: Number,
-  },
-  weight: {
-    type: Number,
-  },
-  duration: {
-    type: Number,
-  },
-  distance: {
-    type: Number,
   },
 });
 
