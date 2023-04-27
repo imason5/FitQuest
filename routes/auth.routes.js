@@ -2,8 +2,9 @@ const express = require("express");
 const User = require("../models/User.model");
 const router = express.Router();
 const bcryptjs = require("bcryptjs");
-const roundOfSalt = 13;
+const { validateSignupInput } = require("../middleware/inputValidation");
 
+const roundOfSalt = 13;
 const pwdRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/;
 
 /* --- 1. GET: signup page --- */
@@ -12,7 +13,7 @@ router.get("/signup", (req, res, next) => {
 });
 
 /* --- 2. POST: signup page --- */
-router.post("/signup", async (req, res, next) => {
+router.post("/signup", validateSignupInput, async (req, res, next) => {
   try {
     const potentialUser = await User.findOne({ username: req.body.username });
 
