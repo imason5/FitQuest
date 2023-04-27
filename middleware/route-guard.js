@@ -13,5 +13,3 @@ module.exports = {
   isLoggedIn,
   isLoggedOut,
 };
-
-// functions expect req.session.currentUser = user._id; // or req.session.currentUser = user;

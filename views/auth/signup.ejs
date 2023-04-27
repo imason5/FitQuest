@@ -1,17 +1,36 @@
 <h1>Signup Page</h1>
 <form action="/auth/signup" method="post">
-  <label for="username"
-    >Username:
-    <input type="text" name="username" required />
-  </label>
-  <label for="password"
-    >Password:
-    <input type="password" name="password" required />
+  <label for="username">
+    Username:
+    <input
+      type="text"
+      name="username"
+      pattern="[A-Za-z0-9_]{3,20}"
+      title="Username must be 3-20 characters long and contain only letters, numbers, and underscores."
+      required
+    />
   </label>
   <br />
-  <label for="email"
-    >Email:
-    <input type="email" name="email" required />
+  <label for="password">
+    Password:
+    <input
+      type="password"
+      name="password"
+      pattern="(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}"
+      title="Password must be at least 8 characters long, and contain at least one letter and one number."
+      required
+    />
+  </label>
+  <br />
+  <label for="email">
+    Email:
+    <input
+      type="email"
+      name="email"
+      pattern="[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}"
+      title="Please enter a valid email address."
+      required
+    />
   </label>
   <br />
   <button type="submit">Signup</button>
