@@ -1,19 +1,19 @@
 <h1>Profile Page</h1>
 <div id="personalInfo">
-    <h3>Personal Info</h3>
-    <img src="#" alt="profile-pic">
-    <ul>
-        <li>Username: <%- username %></li>
-        <li>Email: <%- email %></li>
-        <li>Age:</li>
-        <li>Gender:</li>
-        <li>Weight:</li>
-        <li>Height:</li>
-        <li>Bio:</li>
-    </ul>
+  <h3>Personal Info</h3>
+  <img src="#" alt="profile-pic" />
+  <ul>
+    <li>Username: <%- isExistingUser.username %></li>
+    <li>Email: <%- isExistingUser.email %></li>
+    <li>Age: <%- isExistingUser.age %></li>
+    <li>Gender: <%- isExistingUser.gender %></li>
+    <li>Weight: <%- isExistingUser.weight %></li>
+    <li>Height: <%- isExistingUser.height %></li>
+    <li>Bio: <%- isExistingUser.bio %></li>
+  </ul>
 </div>
 <div id="personalWorkouts">
-    <h3>Personal Workouts</h3>
-    <ul></ul>
+  <h3>Personal Workouts</h3>
+  <ul></ul>
 </div>
 <a href="/auth/logout">Log Out</a>
