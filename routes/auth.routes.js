@@ -3,16 +3,17 @@ const User = require("../models/User.model");
 const router = express.Router();
 const bcryptjs = require("bcryptjs");
 const { validateSignupInput } = require("../middleware/inputValidation");
+const { isLoggedIn, isLoggedOut } = require("../middleware/route-guard");
 
 const roundOfSalt = 13;
 const pwdRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/;
 
-/* --- 1. GET: signup page --- */
+/* --- GET: signup page --- */
 router.get("/signup", (req, res, next) => {
   res.render("auth/signup");
 });
 
-/* --- 2. POST: signup page --- */
+/* --- POST: signup page --- */
 router.post("/signup", validateSignupInput, async (req, res, next) => {
   try {
     const isExistingUser = await User.findOne({ username: req.body.username });
@@ -26,6 +27,11 @@ router.post("/signup", validateSignupInput, async (req, res, next) => {
           username: req.body.username,
           password: passwordHash,
           email: req.body.email,
+          age: req.body.age,
+          gender: req.body.gender,
+          weight: req.body.weight,
+          height: req.body.height,
+          bio: req.body.bio,
         });
         res.redirect("/auth/login");
       } else {
@@ -39,14 +45,15 @@ router.post("/signup", validateSignupInput, async (req, res, next) => {
   }
 });
 
-/* --- 3. GET: login page --- */
+/* --- GET: login page --- */
 router.get("/login", (req, res, next) => {
   res.render("auth/login");
 });
 
-/* --- 4. POST: login page --- */
+/* --- POST: login page --- */
 router.post("/login", async (req, res, next) => {
-  const { username, password } = req.body;
+  const { username, password, email, age, gender, weight, height, bio } =
+    req.body;
 
   try {
     const isExistingUser = await User.findOne({ username });
@@ -54,7 +61,7 @@ router.post("/login", async (req, res, next) => {
     if (isExistingUser) {
       if (bcryptjs.compareSync(password, isExistingUser.password)) {
         req.session.loggedInUser = isExistingUser;
-        res.redirect("/"); // change the path to profile page once profile page is done
+        res.render("auth/profile", { isExistingUser });
       } else {
         res.render("auth/login", { username });
       }
@@ -65,4 +72,18 @@ router.post("/login", async (req, res, next) => {
     console.log("Error from login post: ", error);
   }
 });
+
+/* --- GET: profile page --- */
+router.get("/profile", isLoggedIn, (req, res, next) => {
+  res.render("auth/profile");
+});
+
+/* --- GET: logout request --- */
+router.get("/logout", (req, res, next) => {
+  req.session.destroy((err) => {
+    if (err) next(err);
+    res.redirect("/");
+  });
+});
+
 module.exports = router;
