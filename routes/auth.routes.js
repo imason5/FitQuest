@@ -46,27 +46,25 @@ router.get("/login", (req, res, next) => {
 });
 
 /* --- 4. GET: login page --- */
-router.post("/login", async(req, res, next) => {
-
+router.post("/login", async (req, res, next) => {
   const { username, password } = req.body;
 
   try {
-    const loginUser = await User.findOne({username})
+    const loginUser = await User.findOne({ username });
 
-    if(!!loginUser === true) {
+    if (!!loginUser === true) {
       if (bcryptjs.compareSync(password, loginUser.password)) {
-        req.session.username = loginUser.username
-        res.redirect('/') // change the path to profile page once profile page is done
-
+        req.session.currentUser = loginUser;
+        res.redirect("/"); // change the path to profile page once profile page is done
       } else {
-        res.render('auth/login', {username})
+        res.render("auth/login", { username });
       }
     } else {
-      res.render('auth/login', {username})
+      res.render("auth/login", { username });
     }
   } catch (error) {
-    console.log("Error from login post: ", error)
+    console.log("Error from login post: ", error);
   }
-})
+});
 
 module.exports = router;
