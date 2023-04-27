@@ -3,6 +3,7 @@ const User = require("../models/User.model");
 const router = express.Router();
 const bcryptjs = require("bcryptjs");
 const { validateSignupInput } = require("../middleware/inputValidation");
+const { isLoggedIn, isLoggedOut } = require("../middleware/route-guard")
 
 const roundOfSalt = 13;
 const pwdRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/;
@@ -46,7 +47,7 @@ router.get("/login", (req, res, next) => {
 
 /* --- 4. POST: login page --- */
 router.post("/login", async (req, res, next) => {
-  const { username, password } = req.body;
+  const { username, password, email } = req.body;
 
   try {
     const isExistingUser = await User.findOne({ username });
@@ -54,7 +55,7 @@ router.post("/login", async (req, res, next) => {
     if (isExistingUser) {
       if (bcryptjs.compareSync(password, isExistingUser.password)) {
         req.session.loggedInUser = isExistingUser;
-        res.redirect("/"); // change the path to profile page once profile page is done
+        res.render("auth/profile", {username, email});
       } else {
         res.render("auth/login", { username });
       }
@@ -65,4 +66,10 @@ router.post("/login", async (req, res, next) => {
     console.log("Error from login post: ", error);
   }
 });
+
+/* --- 5. GET: profile page --- */
+router.get("/profile", isLoggedIn, (req, res, next) => {
+  res.render("auth/profile")
+})
+
 module.exports = router;
