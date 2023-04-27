@@ -24,10 +24,14 @@ const projectName = "fitness-tracker";
 
 app.locals.appTitle = `${capitalize(projectName)} created with IronLauncher`;
 
-// 👇 Start handling routes here
+/* Handling routes here */
+/* 1. index route */
 const indexRoutes = require("./routes/index.routes");
 app.use("/", indexRoutes);
 
+/* 2. auth route */
+const authRoutes = require("./routes/auth.routes");
+app.use("/auth", authRoutes);
 // Testing for Session Management - can be removed later
 const sessionRoutes = require("./routes/session.routes");
 app.use("/session", sessionRoutes);
