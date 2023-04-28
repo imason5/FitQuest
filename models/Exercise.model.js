@@ -1,6 +1,5 @@
 const { Schema, model } = require("mongoose");
 
-// Exercise model should describe the general characteristics of an exercise
 const exerciseSchema = new Schema({
   name: {
     type: String,
