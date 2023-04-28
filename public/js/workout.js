@@ -84,6 +84,20 @@ async function createWorkout(name) {
   }
 }
 
+document
+  .getElementById("finish-workout")
+  .addEventListener("click", async () => {
+    const response = await fetch(`/api/finish-workout/${workoutId}`, {
+      method: "PUT",
+    });
+
+    if (response.ok) {
+      console.log("Workout finished");
+    } else {
+      console.error("Error finishing workout");
+    }
+  });
+
 const workoutName = "My Workout";
 
 (async () => {

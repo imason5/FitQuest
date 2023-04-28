@@ -64,10 +64,9 @@ router.post("/exercise-log", isLoggedIn, async (req, res) => {
 router.post("/create-workout", isLoggedIn, async (req, res, next) => {
   try {
     const userId = req.session.loggedInUser._id;
-    const { workoutName, workoutId } = req.body;
+    const { workoutName } = req.body;
 
     const workout = await Workout.create({
-      _id: workoutId,
       name: workoutName,
       userId: userId,
     });
@@ -82,4 +81,5 @@ router.post("/create-workout", isLoggedIn, async (req, res, next) => {
     next(error);
   }
 });
+
 module.exports = router;
