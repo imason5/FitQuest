@@ -33,7 +33,7 @@ router.post("/signup", validateSignupInput, async (req, res, next) => {
           height: req.body.height,
           bio: req.body.bio,
         });
-        res.redirect("/auth/login");
+        res.redirect("/login");
       } else {
         res.render("auth/signup");
       }
@@ -61,7 +61,7 @@ router.post("/login", async (req, res, next) => {
     if (isExistingUser) {
       if (bcryptjs.compareSync(password, isExistingUser.password)) {
         req.session.loggedInUser = isExistingUser;
-        res.redirect("/protected/profile");
+        res.redirect("/profile");
       } else {
         res.render("auth/login", { username });
       }

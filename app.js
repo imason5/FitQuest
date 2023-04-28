@@ -31,7 +31,7 @@ app.use("/", indexRoutes);
 
 /* 2. auth route */
 const authRoutes = require("./routes/auth.routes");
-app.use("/auth", authRoutes);
+app.use("/", authRoutes);
 // Testing for Session Management - can be removed later
 const sessionRoutes = require("./routes/session.routes");
 app.use("/session", sessionRoutes);

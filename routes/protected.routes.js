@@ -3,7 +3,8 @@ const router = express.Router();
 const { isLoggedIn, isLoggedOut } = require("../middleware/route-guard");
 
 /* --- GET: profile page --- */
-router.get("/protected/profile", isLoggedIn, (req, res, next) => {
+router.get("/profile", isLoggedIn, (req, res, next) => {
+  // Changed from "/protected/profile"
   const loggedInUser = req.session.loggedInUser;
   res.render("protected/profile", { loggedInUser });
 });
