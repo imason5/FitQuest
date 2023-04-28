@@ -61,6 +61,7 @@ router.post("/login", async (req, res, next) => {
     if (isExistingUser) {
       if (bcryptjs.compareSync(password, isExistingUser.password)) {
         req.session.loggedInUser = isExistingUser;
+        console.log("successfully login");
         res.redirect("/profile");
       } else {
         res.render("auth/login", { username });

@@ -12,8 +12,86 @@
     <li>Bio: <%- loggedInUser.bio %></li>
   </ul>
 </div>
+<button class="button-accent" type="button" data-trigger-dialog="pop-up">
+  Edit
+</button>
 <div id="personalWorkouts">
   <h3>Personal Workouts</h3>
   <ul></ul>
 </div>
+<br />
 <a href="/logout">Log Out</a>
+<dialog id="pop-up">
+  <form name="profile" action="/profile/<%- loggedInUser._id %>" method="post">
+    <label style="color: white"
+      >Edit Profile
+      <div class="input-row">
+        <label for="username">
+          Username:
+          <input
+            type="text"
+            name="username"
+            pattern="[A-Za-z0-9_]{3,20}"
+            title="Username must be 3-20 characters long and contain only letters, numbers, and underscores."
+            required
+            value="<%- loggedInUser.username %>"
+          />
+        </label>
+        <br />
+        <label for="password">
+          Password:
+          <input
+            type="password"
+            name="password"
+            pattern="(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}"
+            title="Password must be at least 8 characters long, and contain at least one letter and one number."
+            required
+            placeholder="********"
+          />
+        </label>
+        <br />
+        <label for="email">
+          Email:
+          <input
+            type="email"
+            name="email"
+            pattern="[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}"
+            title="Please enter a valid email address."
+            required
+            value="<%- loggedInUser.email %>"
+          />
+        </label>
+        <br />
+        <label for="age">
+          Age:
+          <input type="number" name="age" min="0" value="<%- loggedInUser.age %>"/>
+        </label>
+        <label for="gender">
+          Gender:
+          <input type="radio" name="gender" value="male" checked="<%- loggedInUser.gender === "male" ? true : false %>"/>Male
+          <input type="radio" name="gender" value="female" checked="<%- loggedInUser.gender === "female" ? true : false %>" />Female
+          <input type="radio" name="gender" value="other" checked="<%- loggedInUser.gender === "other" ? true : false %>" />Other
+        </label>
+        <label for=""></label>
+        <br />
+        <label for="weight">
+          Weight:
+          <input type="number" name="weight" min="0" value="<%- loggedInUser.weight %>"/>
+        </label>
+        <label for="height">
+          Height:
+          <input type="number" name="height" min="0" value="<%- loggedInUser.height %>"/>
+        </label>
+        <br />
+        <label for="bio">
+          Bio:
+          <br />
+          <textarea name="bio" id="bio" cols="50" rows="5" ><%- loggedInUser.bio %></textarea>
+        </label>
+        <br />
+    </label>
+    <div class="button-group">
+      <button type="submit">Submit</button>
+    </div>
+  </form>
+</dialog>
