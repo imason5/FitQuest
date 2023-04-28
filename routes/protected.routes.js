@@ -17,14 +17,15 @@ router.post("/profile/:userId", isLoggedIn, async (req, res, next) => {
   try {
     console.log("updated user info: ", req.body);
     console.log(req.params); // { userId: '644ba5cae6a408d51884eda4' }
-    const loggedInUser = await User.findByIdAndUpdate(req.params.userId, {
+    const userInfoUpdated = await User.findByIdAndUpdate(req.params.userId, {
       ...req.body,
       username: req.body.username,
+      email: req.body.email,
       age: req.body.age,
       gender: req.body.gender,
     });
-    console.log(loggedInUser);
-    // res.render("protected/profile", { loggedInUser });
+    //console.log(loggedInUse: userInfoUpdated);
+    res.render("protected/profile", { loggedInUser: userInfoUpdated });
   } catch (error) {
     console.log("Error from profile post: ", error);
   }

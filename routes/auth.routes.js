@@ -61,8 +61,8 @@ router.post("/login", async (req, res, next) => {
     if (isExistingUser) {
       if (bcryptjs.compareSync(password, isExistingUser.password)) {
         req.session.loggedInUser = isExistingUser;
-        console.log("successfully login");
-        res.redirect("/profile");
+        // console.log("successfully login");
+        res.render("protected/profile", { isExistingUser });
       } else {
         res.render("auth/login", { username });
       }
@@ -75,7 +75,7 @@ router.post("/login", async (req, res, next) => {
 });
 
 /* --- GET: logout request --- */
-router.get("/logout", (req, res, next) => {
+router.get("/logout", isLoggedIn, (req, res, next) => {
   req.session.destroy((err) => {
     if (err) next(err);
     res.redirect("/");
