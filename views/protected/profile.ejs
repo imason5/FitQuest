@@ -1,0 +1,19 @@
+<h1>Profile Page</h1>
+<div id="personalInfo">
+  <h3>Personal Info</h3>
+  <img src="#" alt="profile-pic" />
+  <ul>
+    <li>Username: <%- loggedInUser.username %></li>
+    <li>Email: <%- loggedInUser.email %></li>
+    <li>Age: <%- loggedInUser.age %></li>
+    <li>Gender: <%- loggedInUser.gender %></li>
+    <li>Weight: <%- loggedInUser.weight %></li>
+    <li>Height: <%- loggedInUser.height %></li>
+    <li>Bio: <%- loggedInUser.bio %></li>
+  </ul>
+</div>
+<div id="personalWorkouts">
+  <h3>Personal Workouts</h3>
+  <ul></ul>
+</div>
+<a href="/auth/logout">Log Out</a>
