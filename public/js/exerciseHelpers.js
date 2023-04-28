@@ -1,13 +1,13 @@
 const path = require("path");
 const Exercise = require(path.join(__dirname, "../../models/Exercise.model"));
 
-async function storeExercise(apiData) {
+async function storeExercise(apiData, searchTerm) {
   // Transform the API data into a format that the database can understand
   const transformedData = transformExerciseData(apiData);
 
-  // Check to see if an exercise with the same name already exists in the database
+  // Check to see if an exercise with the same name or muscle already exists in the database
   const existingExercise = await Exercise.findOne({
-    name: transformedData.name,
+    $or: [{ name: transformedData.name }, { muscle: transformedData.muscle }],
   });
   let exerciseId;
 
