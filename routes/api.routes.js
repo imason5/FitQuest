@@ -24,11 +24,11 @@ router.get("/search", async (req, res) => {
   );
   const exercises = await response.json();
 
-  // // Store each fetched exercise in the database (or retrieve an existing one)
-  // for (const exerciseData of exercises) {
-  //   const exerciseId = await storeExercise(exerciseData);
-  //   exerciseData._id = exerciseId;
-  // }
+  // Store each fetched exercise in the database (or retrieve an existing one)
+  for (const exerciseData of exercises) {
+    const exerciseId = await storeExercise(exerciseData);
+    exerciseData._id = exerciseId;
+  }
 
   res.json(exercises);
 });
