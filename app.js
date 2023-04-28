@@ -1,7 +1,7 @@
 // ℹ️ Gets access to environment variables/settings
 // https://www.npmjs.com/package/dotenv
 require("dotenv").config();
-
+console.log("Loaded .env file:", process.env.API_KEY);
 // ℹ️ Connects to the database
 require("./db");
 
@@ -10,6 +10,9 @@ require("./db");
 const express = require("express");
 
 const app = express();
+
+const path = require("path");
+app.use(express.static(path.join(__dirname, "public")));
 
 // Session configuration
 const sessionConfig = require("./config/session.config");
@@ -38,6 +41,10 @@ app.use("/session", sessionRoutes);
 
 const protectedRoutes = require("./routes/protected.routes");
 app.use("/", protectedRoutes);
+
+/* 3. api route */
+const apiRouter = require("./routes/api.routes");
+app.use("/api", apiRouter);
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);
