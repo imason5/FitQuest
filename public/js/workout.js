@@ -9,7 +9,7 @@ document.getElementById("searchForm").addEventListener("submit", async (e) => {
 });
 
 function displaySearchResults(exercises) {
-  console.log("Exercises array:", exercises); // Add this line
+  console.log("Exercises array:", exercises);
   const searchResults = document.getElementById("searchResults");
   searchResults.innerHTML = "";
 
