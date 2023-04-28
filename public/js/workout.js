@@ -1,91 +1,91 @@
-const express = require("express");
-const router = express.Router();
-const fetch = require("node-fetch");
-const path = require("path");
-
-const { isLoggedIn } = require("../middleware/route-guard");
-const { storeExercise } = require(path.join(
-  __dirname,
-  "../public/js/exerciseHelpers"
-));
-
-const ExerciseLog = require("../models/ExerciseLog.model");
-const Workout = require("../models/Workout.model");
-const User = require("../models/User.model");
-
-// API route handlers
-router.get("/search", searchExercises);
-router.post("/exercise-log", isLoggedIn, saveExerciseLog);
-router.post("/create-workout", isLoggedIn, saveWorkout);
-
-// API GET route to search for exercises
-async function searchExercises(req, res) {
-  const search = req.query.search;
-  const apiKey = process.env.API_KEY;
-
+// Functionality for button to search for exercises
+document.getElementById("searchForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const search = document.getElementById("search").value;
   const response = await fetch(
-    `https://api.api-ninjas.com/v1/exercises?name=${encodeURIComponent(
-      search
-    )}`,
-    {
-      headers: {
-        "X-Api-Key": apiKey,
-      },
-    }
+    `/api/search?search=${encodeURIComponent(search)}`
   );
   const exercises = await response.json();
+  displaySearchResults(exercises);
+});
 
-  // Store each fetched exercise in the database (or retrieve an existing one)
-  for (const exerciseData of exercises) {
-    const exerciseId = await storeExercise(exerciseData);
-    exerciseData._id = exerciseId;
+// Display search results
+function displaySearchResults(exercises) {
+  console.log("Exercises array:", exercises);
+  const searchResults = document.getElementById("searchResults");
+  searchResults.innerHTML = "";
+
+  for (const exercise of exercises) {
+    if (!exercise) {
+      console.error("No exercises found");
+      continue;
+    }
+
+    const div = document.createElement("div");
+    div.innerHTML = `
+      <span>${exercise.name}</span>
+      <button class="add-exercise" data-id="${exercise._id}">Add to workout</button>
+    `;
+    searchResults.appendChild(div);
   }
-
-  res.json(exercises);
 }
 
-// API POST route to save an exercise log
-async function saveExerciseLog(req, res) {
-  const { workoutId, exerciseId, sets, reps, weight } = req.body;
+// Event listener for button to add exercise to workout
+document.addEventListener("click", async (e) => {
+  if (e.target.classList.contains("add-exercise")) {
+    const exerciseId = e.target.dataset.id;
+    const sets = 3;
+    const reps = 10;
+    const weight = 100;
 
-  const exerciseLog = new ExerciseLog({
-    workoutId,
-    exerciseId,
-    sets,
-    reps,
-    weight,
+    const response = await fetch("/api/exercise-log", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        workoutId,
+        exerciseId,
+        sets,
+        reps,
+        weight,
+      }),
+    });
+
+    if (response.ok) {
+      console.log("Exercise added to workout");
+    } else {
+      console.error("Error adding exercise to workout");
+    }
+  }
+});
+
+let workoutId;
+
+async function createWorkout(name) {
+  const response = await fetch("/api/create-workout", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      workoutName: name,
+    }),
   });
 
-  try {
-    await exerciseLog.save();
-    res.sendStatus(200);
-  } catch (error) {
-    console.error("Error saving ExerciseLog:", error);
-    res.sendStatus(500);
+  if (response.ok) {
+    const workout = await response.json();
+    workoutId = workout._id;
+    console.log("Workout ID:", workoutId);
+    return true;
+  } else {
+    console.error("Error creating workout");
+    return false;
   }
 }
 
-// API POST route to save a workout
-async function saveWorkout(req, res, next) {
-  try {
-    const userId = req.session.loggedInUser._id;
-    const { workoutName, workoutId } = req.body;
+const workoutName = "My Workout";
 
-    const workout = await Workout.create({
-      _id: workoutId,
-      name: workoutName,
-      userId: userId,
-    });
-
-    await User.findByIdAndUpdate(userId, {
-      $push: { workouts: workout._id },
-    });
-
-    res.status(200).json(workout);
-  } catch (error) {
-    console.error("Error creating a new workout:", error);
-    next(error);
-  }
-}
-
-module.exports = router;
+(async () => {
+  await createWorkout(workoutName);
+})();

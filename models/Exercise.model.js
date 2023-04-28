@@ -38,6 +38,7 @@ const exerciseSchema = new Schema({
       "quadriceps",
       "traps",
       "triceps",
+      "shoulders",
     ],
   },
   equipment: {

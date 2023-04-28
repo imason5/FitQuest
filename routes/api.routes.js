@@ -32,7 +32,7 @@ router.get("/search", async (req, res) => {
 
   // Store each fetched exercise in the database (or retrieve an existing one)
   for (const exerciseData of exercises) {
-    const exerciseId = await storeExercise(exerciseData);
+    const exerciseId = await storeExercise(exerciseData, search);
     exerciseData._id = exerciseId;
   }
 
