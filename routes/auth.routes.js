@@ -61,7 +61,7 @@ router.post("/login", async (req, res, next) => {
     if (isExistingUser) {
       if (bcryptjs.compareSync(password, isExistingUser.password)) {
         req.session.loggedInUser = isExistingUser;
-        res.render("auth/profile", { isExistingUser });
+        res.redirect("/protected/profile");
       } else {
         res.render("auth/login", { username });
       }
@@ -71,11 +71,6 @@ router.post("/login", async (req, res, next) => {
   } catch (error) {
     console.log("Error from login post: ", error);
   }
-});
-
-/* --- GET: profile page --- */
-router.get("/profile", isLoggedIn, (req, res, next) => {
-  res.render("auth/profile");
 });
 
 /* --- GET: logout request --- */
