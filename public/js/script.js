@@ -12,3 +12,8 @@ dialogTriggers.forEach((trigger) => {
     }
   });
 });
+
+const cancelBtn = document.querySelector("#cancel");
+cancelBtn.addEventListener("click", () => {
+  dialog.close;
+});

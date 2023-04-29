@@ -12,6 +12,7 @@
     <li>Bio: <%- loggedInUser.bio %></li>
   </ul>
 </div>
+<br />
 <button class="button-accent" type="button" data-trigger-dialog="pop-up">
   Edit
 </button>
@@ -21,11 +22,13 @@
 </div>
 <br />
 <a href="/logout">Log Out</a>
+
 <dialog id="pop-up">
-  <form name="profile" action="/profile/<%- loggedInUser._id %>" method="post">
+  <form name="profile" action="/profile" method="post">
     <label style="color: white"
       >Edit Profile
       <div class="input-row">
+        <input type="hidden" name="userId" value="<%- loggedInUser._id %>">
         <label for="username">
           Username:
           <input
@@ -45,9 +48,9 @@
             name="password"
             pattern="(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}"
             title="Password must be at least 8 characters long, and contain at least one letter and one number."
-            required
             placeholder="********"
           />
+          Leave blank if you don't want to change it
         </label>
         <br />
         <label for="email">
@@ -92,6 +95,8 @@
     </label>
     <div class="button-group">
       <button type="submit">Submit</button>
+      <button type="reset">Reset</button>
+      <button id="cancel" type="button">Cancel</button>
     </div>
   </form>
 </dialog>
