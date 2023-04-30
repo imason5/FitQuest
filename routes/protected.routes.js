@@ -21,83 +21,52 @@ router.get("/profile", isLoggedIn, (req, res, next) => {
 router.post("/profile", isLoggedIn, async (req, res, next) => {
   try {
     const { username, email, password, userId } = req.body;
+    const currentUser = await User.findById(userId);
 
-    const isUpdatingUser = User.findById(userId);
-    const isUpdatingUsername = isUpdatingUser.username;
-    const isUpdatingEmail = isUpdatingUser.email;
+    await User.findOne({ $or: [{ username }, { email }] })
+      .then((existingUser) => {
+        const existingUserId = existingUser._id.toString();
 
-    //If new username has not been taken or username remains the same
-    if (!isUpdatingUsername || isUpdatingUsername === username) {
-      //If new email is not taken or email remains the same
-      if (!isUpdatingEmail || isUpdatingEmail === email) {
-        if (!req.body.password) {
-          //If user don't update password
-          await User.findByIdAndUpdate(
-            req.body.userId,
-            {
-              username: req.body.username,
-              email: req.body.email,
-              age: req.body.age,
-              gender: req.body.gender,
-              weight: req.body.weight,
-              height: req.body.height,
-              bio: req.body.bio,
-            },
-            { new: true }
-          )
-            .then((newInfo) => {
-              res.render("protected/profile", { loggedInUser: newInfo });
-            })
-            .catch((error) => {
-              console.log(
-                "Error from updating user info - without password",
-                error
-              );
+        if (existingUser && existingUserId !== userId) {
+          return res.status(400).render("protected/profile", {
+            loggedInUser: currentUser,
+            errorMessage: "Username or email already taken",
+          });
+        } else if (!existingUser || existingUserId === userId) {
+          currentUser.username = req.body.username;
+          currentUser.email = req.body.email;
+          currentUser.age = req.body.age;
+          currentUser.gender = req.body.gender;
+          currentUser.weight = req.body.weight;
+          currentUser.height = req.body.height;
+          currentUser.bio = req.body.bio;
+
+          if (password && pwdRegex.test(password)) {
+            const salt = bcryptjs.genSaltSync(roundOfSalt);
+            currentUser.password = bcryptjs.hashSync(password, salt);
+          } else if (password && !pwdRegex.test(password)) {
+            return res.status(400).render("protected/profile", {
+              loggedInUser: currentUser,
+              errorMessage: "Password is not strong enough",
             });
-        } else {
-          //If user updates password
-          const salt = bcryptjs.genSaltSync(roundOfSalt);
-          const isUpdatingPasswordHash = bcryptjs.hashSync(
-            req.body.password,
-            salt
-          );
+          }
 
-          await User.findByIdAndUpdate(
-            req.body.userId,
-            {
-              username: req.body.username,
-              password: isUpdatingPasswordHash,
-              email: req.body.email,
-              age: req.body.age,
-              gender: req.body.gender,
-              weight: req.body.weight,
-              height: req.body.height,
-              bio: req.body.bio,
-            },
-            { new: true }
-          )
-            .then((newInfo) => {
-              res.render("protected/profile", { loggedInUser: newInfo });
+          currentUser
+            .save()
+            .then((loggedInUser) => {
+              res.render("protected/profile", { loggedInUser });
             })
             .catch((error) => {
-              console.log("Error from updating user info - with password");
+              console.log("Error from saving updated info: ", error);
             });
         }
-      } else {
-        //If new email is taken
-        res.render("protected/profile", {
-          loggedInUser: req.body,
-          errorMessage: "Email is already in use",
-        });
-      }
-    } else {
-      res.render("protected/profile", {
-        loggedInUser: newInfo,
-        errorMessage: "Username is already in use",
-      });
-    }
+      })
+      .catch((error) => console.log("Error from updating info: ", error));
   } catch (error) {
-    console.log("Error from try catch: ", error);
+    res.render("protected/profile", {
+      loggedInUser: currentUser,
+      errorMessage: "Error updating profile",
+    });
   }
 });
 

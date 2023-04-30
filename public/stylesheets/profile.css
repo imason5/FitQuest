@@ -1,0 +1,28 @@
+dialog {
+  border: 3px solid #9da3a4;
+  border-radius: 0.8rem;
+  color: var(--color-text);
+  background: white;
+  margin: auto;
+  padding: 2rem;
+  width: 90vw;
+  max-height: calc(100% - var(--space-md));
+}
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 0;
+}
+
+dialog p {
+  margin: 0.8rem 0;
+}
+
+.form-control {
+  width: 100%;
+}
