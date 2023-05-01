@@ -60,7 +60,7 @@ router.post("/exercise-log", isLoggedIn, async (req, res) => {
   }
 });
 
-// API POST route to save a workout
+// API POST route to save a workout  --- NOT WORKING
 router.post("/create-workout", isLoggedIn, async (req, res, next) => {
   try {
     const userId = req.session.loggedInUser._id;

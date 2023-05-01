@@ -53,9 +53,9 @@ document.addEventListener("click", async (e) => {
     });
 
     if (response.ok) {
-      console.log("Exercise added to workout");
+      console.log("Exercise added to current workout");
     } else {
-      console.error("Error adding exercise to workout");
+      console.error("Error adding exercise to current workout");
     }
   }
 });
@@ -84,6 +84,7 @@ async function createWorkout(name) {
   }
 }
 
+// Event listener for button to finish workout ----- NOT WORKING
 document
   .getElementById("finish-workout")
   .addEventListener("click", async () => {
