@@ -68,7 +68,7 @@ let workoutId;
 // ********************
 
 async function createNewWorkout(name) {
-  const response = await fetch("/api/create-workout", {
+  const response = await fetch("/workout/create-workout", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -97,7 +97,7 @@ document.getElementById("searchForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   const search = document.getElementById("search").value;
   const response = await fetch(
-    `/api/search?search=${encodeURIComponent(search)}`
+    `/workout/search?search=${encodeURIComponent(search)}`
   );
   const exercises = await response.json();
   displaySearchResults(exercises);
@@ -113,7 +113,7 @@ document.addEventListener("click", async (e) => {
 
     console.log("Workout ID before sending request:", workoutId);
 
-    const response = await fetch("/api/exercise-log", {
+    const response = await fetch("/workout/exercise-log", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -148,7 +148,7 @@ document
   .getElementById("finish-workout")
   .addEventListener("click", async () => {
     console.log("Finish Workout button clicked");
-    const response = await fetch(`/api/finish-workout/${workoutId}`, {
+    const response = await fetch(`/workout/finish-workout/${workoutId}`, {
       method: "PUT",
     });
 
@@ -156,9 +156,9 @@ document
       console.log("Workout finished");
 
       // Fetch the workout and its exercise logs
-      const workoutResponse = await fetch(`/api/get-workout/${workoutId}`);
+      const workoutResponse = await fetch(`/workout/get-workout/${workoutId}`);
       const exerciseLogsResponse = await fetch(
-        `/api/exercise-log/${workoutId}`
+        `/workout/exercise-log/${workoutId}`
       );
       console.log("exerciseLogsResponse:", exerciseLogsResponse);
 

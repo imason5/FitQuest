@@ -43,8 +43,8 @@ const protectedRoutes = require("./routes/protected.routes");
 app.use("/", protectedRoutes);
 
 /* 3. api route */
-const apiRouter = require("./routes/api.routes");
-app.use("/api", apiRouter);
+const apiRouter = require("./routes/workout.routes");
+app.use("/workout", apiRouter);
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);

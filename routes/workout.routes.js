@@ -14,9 +14,9 @@ const ExerciseLog = require("../models/ExerciseLog.model");
 const Workout = require("../models/Workout.model");
 const User = require("../models/User.model");
 
-// API GET route to search for exercises
+// Route to search for exercises (API call)
 router.get("/search", async (req, res) => {
-  const search = req.query.search;
+  const { search } = req.query;
   const apiKey = process.env.API_KEY;
 
   const response = await fetch(
@@ -31,7 +31,6 @@ router.get("/search", async (req, res) => {
   );
   const exercises = await response.json();
 
-  // Store each fetched exercise in the database (or retrieve an existing one)
   for (const exerciseData of exercises) {
     const exerciseId = await storeExercise(exerciseData, search);
     exerciseData._id = exerciseId;
@@ -40,7 +39,7 @@ router.get("/search", async (req, res) => {
   res.json(exercises);
 });
 
-// API POST route to save an exercise log
+// Route to save an exercise log
 router.post("/exercise-log", isLoggedIn, async (req, res) => {
   const { workoutId, exerciseId, sets, reps, weight } = req.body;
 
@@ -54,9 +53,7 @@ router.post("/exercise-log", isLoggedIn, async (req, res) => {
 
   try {
     const savedExerciseLog = await exerciseLog.save();
-    console.log("Saved ExerciseLog:", savedExerciseLog); // Log the saved exercise log
 
-    // Add the exercise log ID to the workout's exercises array
     await Workout.findByIdAndUpdate(workoutId, {
       $push: { exercises: savedExerciseLog._id },
     });
@@ -68,7 +65,7 @@ router.post("/exercise-log", isLoggedIn, async (req, res) => {
   }
 });
 
-// API POST route to create a new workout
+// Route to create a new workout
 router.post("/create-workout", isLoggedIn, async (req, res, next) => {
   try {
     const userId = req.session.loggedInUser._id;
@@ -90,7 +87,7 @@ router.post("/create-workout", isLoggedIn, async (req, res, next) => {
   }
 });
 
-// API GET route to fetch a single workout by ID
+// Route to fetch a single workout by ID
 router.get("/get-workout/:workoutId", async (req, res) => {
   const workoutId = req.params.workoutId;
   try {
@@ -102,7 +99,7 @@ router.get("/get-workout/:workoutId", async (req, res) => {
   }
 });
 
-// API GET route to fetch a single exercise log by ID
+// Route to fetch a single exercise log by ID
 router.get("/get-exercise-log/:exerciseLogId", async (req, res) => {
   const exerciseLogId = req.params.exerciseLogId;
   try {
@@ -114,7 +111,7 @@ router.get("/get-exercise-log/:exerciseLogId", async (req, res) => {
   }
 });
 
-// API GET route to fetch a single exercise by ID
+// Route to fetch a single exercise by ID
 router.get("/get-exercise/:exerciseId", async (req, res) => {
   const exerciseId = req.params.exerciseId;
   try {
@@ -126,17 +123,15 @@ router.get("/get-exercise/:exerciseId", async (req, res) => {
   }
 });
 
-// API GET route to fetch exercise logs for a workout
+// Route to fetch exercise logs for a workout
 router.get("/exercise-log/:workoutId", async (req, res) => {
   const workoutId = req.params.workoutId;
 
   try {
-    // Find the workout by ID
     const workout = await Workout.findById(workoutId);
 
-    // Find all exercise logs that belong to the workout
     const exerciseLogs = await ExerciseLog.find({
-      workoutId: workout._id, // change this line
+      workoutId: workout._id,
     }).populate("exerciseId");
 
     console.log("Fetched exerciseLogs:", exerciseLogs);
@@ -147,7 +142,7 @@ router.get("/exercise-log/:workoutId", async (req, res) => {
   }
 });
 
-// API PUT route to finish a workout
+// Route to finish a workout
 router.put("/finish-workout/:workoutId", isLoggedIn, async (req, res) => {
   const workoutId = req.params.workoutId;
 
@@ -159,12 +154,42 @@ router.put("/finish-workout/:workoutId", isLoggedIn, async (req, res) => {
       },
       { new: true }
     );
-    console.log("Updated Workout:", updatedWorkout); // Log the updated workout
+    console.log("Updated Workout:", updatedWorkout);
     res.sendStatus(200);
   } catch (error) {
     console.error("Error finishing workout:", error);
     res.sendStatus(500);
   }
 });
+
+// Route to fetch a workout along with its exercise logs
+router.get("/workout-with-logs/:workoutId", async (req, res) => {
+  const workoutId = req.params.workoutId;
+
+  try {
+    const workout = await Workout.findById(workoutId).populate("exerciseLogs");
+    res.status(200).json(workout);
+  } catch (error) {
+    console.error("Error fetching workout with exercise logs:", error);
+    res.sendStatus(500);
+  }
+});
+
+// Route to fetch the most recent workout - for testing
+// const getMostRecentWorkout = async () => {
+//   try {
+//     const workout = await Workout.findOne()
+//       .sort({ createdAt: -1 })
+//       .populate("exerciseLogs");
+//     return workout;
+//   } catch (error) {
+//     console.error("Error fetching the most recent workout:", error);
+//   }
+// };
+
+// (async () => {
+//   const mostRecentWorkout = await getMostRecentWorkout();
+//   console.log("Most Recent Workout:", mostRecentWorkout);
+// })();
 
 module.exports = router;
