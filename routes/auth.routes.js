@@ -16,29 +16,52 @@ router.get("/signup", (req, res, next) => {
 /* --- POST: signup page --- */
 router.post("/signup", validateSignupInput, async (req, res, next) => {
   try {
-    const isExistingUser = await User.findOne({ username: req.body.username });
+    const isExistingUsername = await User.findOne({
+      username: req.body.username,
+    });
+    const isExistingEmail = await User.findOne({
+      email: req.body.email,
+    });
 
-    if (!isExistingUser) {
-      if (pwdRegex.test(req.body.password)) {
-        const salt = bcryptjs.genSaltSync(roundOfSalt);
-        const passwordHash = bcryptjs.hashSync(req.body.password, salt);
-
-        await User.create({
-          username: req.body.username,
-          password: passwordHash,
-          email: req.body.email,
-          age: req.body.age,
-          gender: req.body.gender,
-          weight: req.body.weight,
-          height: req.body.height,
-          bio: req.body.bio,
-        });
-        res.redirect("/login");
+    if (!isExistingUsername) {
+      if (!isExistingEmail) {
+        if (pwdRegex.test(req.body.password)) {
+          const salt = bcryptjs.genSaltSync(roundOfSalt);
+          const passwordHash = bcryptjs.hashSync(req.body.password, salt);
+          // Create a new user via User model
+          await User.create({
+            username: req.body.username,
+            password: passwordHash,
+            email: req.body.email,
+            age: req.body.age,
+            gender: req.body.gender,
+            weight: req.body.weight,
+            height: req.body.height,
+            bio: req.body.bio,
+          });
+          // After Signing up, then redirect to login page - redirect
+          res.redirect("/login");
+        } else {
+          // When psw is not strong enough
+          res.render("auth/signup", {
+            username: req.body.username,
+            errorMessage: "Password is not strong enought",
+          });
+        }
       } else {
-        res.render("auth/signup");
+        // When email is already taken
+        res.render("auth/signup", {
+          username: req.body.username,
+          email: req.body.email,
+          errorMessage: "Email is in use",
+        });
       }
     } else {
-      res.render("auth/signup");
+      // When username is already existed
+      res.render("auth/signup", {
+        username: req.body.username,
+        errorMessage: "Username is in use",
+      });
     }
   } catch (error) {
     console.log("Error from signup post: ", error);
@@ -52,8 +75,7 @@ router.get("/login", (req, res, next) => {
 
 /* --- POST: login page --- */
 router.post("/login", async (req, res, next) => {
-  const { username, password, email, age, gender, weight, height, bio } =
-    req.body;
+  const { username, password } = req.body;
 
   try {
     const isExistingUser = await User.findOne({ username });
@@ -74,7 +96,7 @@ router.post("/login", async (req, res, next) => {
 });
 
 /* --- GET: logout request --- */
-router.get("/logout", (req, res, next) => {
+router.get("/logout", isLoggedIn, (req, res, next) => {
   req.session.destroy((err) => {
     if (err) next(err);
     res.redirect("/");
