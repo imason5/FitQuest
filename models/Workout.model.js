@@ -6,6 +6,7 @@ const workoutSchema = new Schema({
     ref: "User",
     required: true,
   },
+  completed: { type: Boolean, default: false },
   name: {
     type: String,
     required: true,

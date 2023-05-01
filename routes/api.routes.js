@@ -9,6 +9,7 @@ const { storeExercise } = require(path.join(
   "../public/js/exerciseHelpers"
 ));
 
+const Exercise = require("../models/Exercise.model");
 const ExerciseLog = require("../models/ExerciseLog.model");
 const Workout = require("../models/Workout.model");
 const User = require("../models/User.model");
@@ -60,7 +61,7 @@ router.post("/exercise-log", isLoggedIn, async (req, res) => {
   }
 });
 
-// API POST route to save a workout  --- NOT WORKING
+// API POST route to create a new workout
 router.post("/create-workout", isLoggedIn, async (req, res, next) => {
   try {
     const userId = req.session.loggedInUser._id;
@@ -79,6 +80,73 @@ router.post("/create-workout", isLoggedIn, async (req, res, next) => {
   } catch (error) {
     console.error("Error creating a new workout:", error);
     next(error);
+  }
+});
+
+// API GET route to fetch a single workout by ID
+router.get("/get-workout/:workoutId", async (req, res) => {
+  const workoutId = req.params.workoutId;
+  try {
+    const workout = await Workout.findById(workoutId);
+    res.status(200).json(workout);
+  } catch (error) {
+    console.error("Error fetching workout:", error);
+    res.sendStatus(500);
+  }
+});
+
+// API GET route to fetch a single exercise log by ID
+router.get("/get-exercise-log/:exerciseLogId", async (req, res) => {
+  const exerciseLogId = req.params.exerciseLogId;
+  try {
+    const exerciseLog = await ExerciseLog.findById(exerciseLogId);
+    res.status(200).json(exerciseLog);
+  } catch (error) {
+    console.error("Error fetching exercise log:", error);
+    res.sendStatus(500);
+  }
+});
+
+// API GET route to fetch a single exercise by ID
+router.get("/get-exercise/:exerciseId", async (req, res) => {
+  const exerciseId = req.params.exerciseId;
+  try {
+    const exercise = await Exercise.findById(exerciseId);
+    res.status(200).json(exercise);
+  } catch (error) {
+    console.error("Error fetching exercise:", error);
+    res.sendStatus(500);
+  }
+});
+
+// API GET route to fetch exercise logs for a workout
+router.get("/exercise-log/:workoutId", async (req, res) => {
+  const workoutId = req.params.workoutId;
+
+  try {
+    const exerciseLogs = await ExerciseLog.find({
+      workoutId: workoutId,
+    }).populate("exerciseId");
+    console.log("Fetched exerciseLogs:", exerciseLogs);
+    res.json(exerciseLogs);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching exercise logs." });
+  }
+});
+
+// API PUT route to finish a workout
+router.put("/finish-workout/:workoutId", isLoggedIn, async (req, res) => {
+  const workoutId = req.params.workoutId;
+
+  try {
+    await Workout.findByIdAndUpdate(workoutId, {
+      completed: true,
+    });
+    res.sendStatus(200);
+  } catch (error) {
+    console.error("Error finishing workout:", error);
+    res.sendStatus(500);
   }
 });
 

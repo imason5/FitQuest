@@ -54,6 +54,8 @@ document.addEventListener("click", async (e) => {
 
     if (response.ok) {
       console.log("Exercise added to current workout");
+      const exerciseName = e.target.previousElementSibling.textContent;
+      displayCurrentWorkout(exerciseId, exerciseName, sets, reps, weight);
     } else {
       console.error("Error adding exercise to current workout");
     }
@@ -84,21 +86,69 @@ async function createWorkout(name) {
   }
 }
 
-// Event listener for button to finish workout ----- NOT WORKING
+function displayCurrentWorkout(exerciseId, exerciseName, sets, reps, weight) {
+  const currentWorkout = document.getElementById("currentWorkout");
+
+  const div = document.createElement("div");
+  div.setAttribute("data-exercise-id", exerciseId);
+  div.innerHTML = `
+    <span>${exerciseName}</span>
+    <span> Sets: ${sets} Reps: ${reps} Weight: ${weight} lbs</span>
+  `;
+  currentWorkout.appendChild(div);
+}
+
+// Event listener for button to finish workout
 document
   .getElementById("finish-workout")
   .addEventListener("click", async () => {
+    console.log("Finish Workout button clicked");
     const response = await fetch(`/api/finish-workout/${workoutId}`, {
       method: "PUT",
     });
 
     if (response.ok) {
       console.log("Workout finished");
+
+      // Fetch the workout and its exercise logs
+      const workoutResponse = await fetch(`/api/get-workout/${workoutId}`);
+      const exerciseLogsResponse = await fetch(
+        `/api/exercise-log/${workoutId}`
+      );
+      console.log("exerciseLogsResponse:", exerciseLogsResponse);
+
+      if (workoutResponse.ok && exerciseLogsResponse.ok) {
+        const exerciseLogs = await exerciseLogsResponse.json();
+        displayWorkoutExercises(exerciseLogs);
+      } else {
+        console.error("Error fetching workout or exercise logs");
+      }
     } else {
       console.error("Error finishing workout");
     }
   });
 
+// Function to display workout exercises
+function displayWorkoutExercises(exerciseLogs) {
+  console.log("Displaying workout exercises:", exerciseLogs);
+  const workoutExercises = document.getElementById("workoutExercises");
+  workoutExercises.innerHTML = "";
+
+  for (const exerciseLog of exerciseLogs) {
+    const exerciseId = exerciseLog.exerciseId._id;
+    const exerciseName = exerciseLog.exerciseId.name;
+    const sets = exerciseLog.sets;
+    const reps = exerciseLog.reps;
+    const weight = exerciseLog.weight;
+
+    const div = document.createElement("div");
+    div.setAttribute("data-exercise-id", exerciseId);
+    div.innerHTML = `
+      <span>${exerciseName}: ${sets} sets x ${reps} reps @ ${weight} lbs</span>
+    `;
+    workoutExercises.appendChild(div);
+  }
+}
 const workoutName = "My Workout";
 
 (async () => {
