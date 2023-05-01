@@ -1,6 +1,10 @@
-body {
-  padding: 50px;
+* {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  /*background-color: #fff;*/
+}
+
+section {
+  padding: 50px;
 }
 
 a {
@@ -9,4 +13,27 @@ a {
 
 h1 {
   color: 15px;
+}
+
+.navbar {
+  padding: 0;
+  margin: 0;
+  height: 75px;
+  background-color: black;
+}
+
+label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 0;
+  height: 2.5rem;
+}
+
+p {
+  margin: 0.8rem 0;
+}
+
+.form-control {
+  width: 100%;
 }

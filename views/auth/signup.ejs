@@ -1,41 +1,41 @@
 <h1>Signup Page</h1>
 <form action="/signup" method="post">
   <label for="username">
-    Username:
+    <p>Username:</p>
     <input
       type="text"
       name="username"
       pattern="[A-Za-z0-9_]{3,20}"
       title="Username must be 3-20 characters long and contain only letters, numbers, and underscores."
       required
+      class="form-control"
     />
   </label>
-  <br />
   <label for="password">
-    Password:
+    <p>Password:</p>
     <input
       type="password"
       name="password"
       pattern="(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}"
       title="Password must be at least 8 characters long, and contain at least one letter and one number."
       required
+      class="form-control"
     />
   </label>
-  <br />
   <label for="email">
-    Email:
+    <p>Email:</p>
     <input
       type="email"
       name="email"
       pattern="^[\w\-\.]+@([\w-]+\.)+[\w]{2,7}$"
       title="Please enter a valid email address."
       required
+      class="form-control"
     />
   </label>
-  <br />
   <label for="age">
     Age:
-    <input type="number" name="age" min="0" />
+    <input type="number" name="age" min="0" class="form-control" />
   </label>
   <label for="gender">
     Gender:
@@ -43,24 +43,26 @@
     <input type="radio" name="gender" value="female" />Female
     <input type="radio" name="gender" value="other" />Other
   </label>
-  <label for=""></label>
-  <br />
   <label for="weight">
     Weight:
-    <input type="number" name="weight" min="0" />
+    <input type="number" name="weight" min="0" class="form-control" />
   </label>
   <label for="height">
     Height:
-    <input type="number" name="height" min="0" />
+    <input type="number" name="height" min="0" class="form-control" />
   </label>
-  <br />
   <label for="bio">
     Bio:
-    <br />
-    <textarea name="bio" id="bio" cols="50" rows="5"></textarea>
+    <textarea
+      name="bio"
+      id="bio"
+      cols="50"
+      rows="2"
+      class="form-control"
+    ></textarea>
   </label>
   <br />
-  <button type="submit">Signup</button>
+  <button type="submit" class="btn btn-primary">Signup</button>
 </form>
 <p style="color: red">
   <%- typeof errorMessage !== 'undefined' ? errorMessage : "" %>

@@ -55,7 +55,7 @@ router.post("/exercise-log", isLoggedIn, async (req, res) => {
     const savedExerciseLog = await exerciseLog.save();
 
     await Workout.findByIdAndUpdate(workoutId, {
-      $push: { exercises: savedExerciseLog._id },
+      $push: { exerciseLogs: savedExerciseLog._id },
     });
 
     res.sendStatus(200);
