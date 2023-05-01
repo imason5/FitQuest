@@ -124,9 +124,14 @@ router.get("/exercise-log/:workoutId", async (req, res) => {
   const workoutId = req.params.workoutId;
 
   try {
+    // Find the workout by ID
+    const workout = await Workout.findById(workoutId);
+
+    // Find all exercise logs that belong to the workout
     const exerciseLogs = await ExerciseLog.find({
-      workoutId: workoutId,
+      _id: { $in: workout.exercises },
     }).populate("exerciseId");
+
     console.log("Fetched exerciseLogs:", exerciseLogs);
     res.json(exerciseLogs);
   } catch (error) {
@@ -140,9 +145,14 @@ router.put("/finish-workout/:workoutId", isLoggedIn, async (req, res) => {
   const workoutId = req.params.workoutId;
 
   try {
-    await Workout.findByIdAndUpdate(workoutId, {
-      completed: true,
-    });
+    const updatedWorkout = await Workout.findByIdAndUpdate(
+      workoutId,
+      {
+        completed: true,
+      },
+      { new: true }
+    ); // Add { new: true } option to return the updated document
+    console.log("Updated Workout:", updatedWorkout); // Log the updated workout
     res.sendStatus(200);
   } catch (error) {
     console.error("Error finishing workout:", error);
