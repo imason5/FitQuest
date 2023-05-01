@@ -53,7 +53,14 @@ router.post("/exercise-log", isLoggedIn, async (req, res) => {
   });
 
   try {
-    await exerciseLog.save();
+    const savedExerciseLog = await exerciseLog.save();
+    console.log("Saved ExerciseLog:", savedExerciseLog); // Log the saved exercise log
+
+    // Add the exercise log ID to the workout's exercises array
+    await Workout.findByIdAndUpdate(workoutId, {
+      $push: { exercises: savedExerciseLog._id },
+    });
+
     res.sendStatus(200);
   } catch (error) {
     console.error("Error saving ExerciseLog:", error);
@@ -129,7 +136,7 @@ router.get("/exercise-log/:workoutId", async (req, res) => {
 
     // Find all exercise logs that belong to the workout
     const exerciseLogs = await ExerciseLog.find({
-      _id: { $in: workout.exercises },
+      workoutId: workout._id, // change this line
     }).populate("exerciseId");
 
     console.log("Fetched exerciseLogs:", exerciseLogs);

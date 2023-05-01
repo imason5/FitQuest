@@ -38,6 +38,7 @@ document.addEventListener("click", async (e) => {
     const reps = 10;
     const weight = 100;
 
+    console.log("Workout ID before sending request:", workoutId);
     const response = await fetch("/api/exercise-log", {
       method: "POST",
       headers: {
