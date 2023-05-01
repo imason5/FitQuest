@@ -158,7 +158,7 @@ router.put("/finish-workout/:workoutId", isLoggedIn, async (req, res) => {
         completed: true,
       },
       { new: true }
-    ); // Add { new: true } option to return the updated document
+    );
     console.log("Updated Workout:", updatedWorkout); // Log the updated workout
     res.sendStatus(200);
   } catch (error) {

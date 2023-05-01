@@ -1,15 +1,7 @@
-// Functionality for button to search for exercises
-document.getElementById("searchForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const search = document.getElementById("search").value;
-  const response = await fetch(
-    `/api/search?search=${encodeURIComponent(search)}`
-  );
-  const exercises = await response.json();
-  displaySearchResults(exercises);
-});
+// ********************
+// DOM manipulation functions
+// ********************
 
-// Display search results
 function displaySearchResults(exercises) {
   console.log("Exercises array:", exercises);
   const searchResults = document.getElementById("searchResults");
@@ -30,42 +22,52 @@ function displaySearchResults(exercises) {
   }
 }
 
-// Event listener for button to add exercise to workout
-document.addEventListener("click", async (e) => {
-  if (e.target.classList.contains("add-exercise")) {
-    const exerciseId = e.target.dataset.id;
-    const sets = 3;
-    const reps = 10;
-    const weight = 100;
+function displayCurrentWorkoutExercise(
+  exerciseId,
+  exerciseName,
+  sets,
+  reps,
+  weight
+) {
+  const currentWorkout = document.getElementById("currentWorkout");
 
-    console.log("Workout ID before sending request:", workoutId);
-    const response = await fetch("/api/exercise-log", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        workoutId,
-        exerciseId,
-        sets,
-        reps,
-        weight,
-      }),
-    });
+  const div = document.createElement("div");
+  div.setAttribute("data-exercise-id", exerciseId);
+  div.innerHTML = `
+    <span>${exerciseName}</span>
+    <span> Sets: ${sets} Reps: ${reps} Weight: ${weight} lbs</span>
+  `;
+  currentWorkout.appendChild(div);
+}
 
-    if (response.ok) {
-      console.log("Exercise added to current workout");
-      const exerciseName = e.target.previousElementSibling.textContent;
-      displayCurrentWorkout(exerciseId, exerciseName, sets, reps, weight);
-    } else {
-      console.error("Error adding exercise to current workout");
-    }
+function displayWorkoutExercises(exerciseLogs) {
+  console.log("Displaying workout exercises:", exerciseLogs);
+  const workoutExercises = document.getElementById("workoutExercises");
+  workoutExercises.innerHTML = "";
+
+  for (const exerciseLog of exerciseLogs) {
+    const exerciseId = exerciseLog.exerciseId._id;
+    const exerciseName = exerciseLog.exerciseId.name;
+    const sets = exerciseLog.sets;
+    const reps = exerciseLog.reps;
+    const weight = exerciseLog.weight;
+
+    const div = document.createElement("div");
+    div.setAttribute("data-exercise-id", exerciseId);
+    div.innerHTML = `
+      <span>${exerciseName}: ${sets} sets x ${reps} reps @ ${weight} lbs</span>
+    `;
+    workoutExercises.appendChild(div);
   }
-});
+}
 
 let workoutId;
 
-async function createWorkout(name) {
+// ********************
+// API interaction functions
+// ********************
+
+async function createNewWorkout(name) {
   const response = await fetch("/api/create-workout", {
     method: "POST",
     headers: {
@@ -87,17 +89,59 @@ async function createWorkout(name) {
   }
 }
 
-function displayCurrentWorkout(exerciseId, exerciseName, sets, reps, weight) {
-  const currentWorkout = document.getElementById("currentWorkout");
+// ********************
+// Event listeners
+// ********************
 
-  const div = document.createElement("div");
-  div.setAttribute("data-exercise-id", exerciseId);
-  div.innerHTML = `
-    <span>${exerciseName}</span>
-    <span> Sets: ${sets} Reps: ${reps} Weight: ${weight} lbs</span>
-  `;
-  currentWorkout.appendChild(div);
-}
+document.getElementById("searchForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const search = document.getElementById("search").value;
+  const response = await fetch(
+    `/api/search?search=${encodeURIComponent(search)}`
+  );
+  const exercises = await response.json();
+  displaySearchResults(exercises);
+});
+
+// Event listener for button to add exercise to workout
+document.addEventListener("click", async (e) => {
+  if (e.target.classList.contains("add-exercise")) {
+    const exerciseId = e.target.dataset.id;
+    const sets = 3;
+    const reps = 10;
+    const weight = 100;
+
+    console.log("Workout ID before sending request:", workoutId);
+
+    const response = await fetch("/api/exercise-log", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        workoutId,
+        exerciseId,
+        sets,
+        reps,
+        weight,
+      }),
+    });
+
+    if (response.ok) {
+      console.log("Exercise added to current workout");
+      const exerciseName = e.target.previousElementSibling.textContent;
+      displayCurrentWorkoutExercise(
+        exerciseId,
+        exerciseName,
+        sets,
+        reps,
+        weight
+      );
+    } else {
+      console.error("Error adding exercise to current workout");
+    }
+  }
+});
 
 // Event listener for button to finish workout
 document
@@ -129,29 +173,12 @@ document
     }
   });
 
-// Function to display workout exercises
-function displayWorkoutExercises(exerciseLogs) {
-  console.log("Displaying workout exercises:", exerciseLogs);
-  const workoutExercises = document.getElementById("workoutExercises");
-  workoutExercises.innerHTML = "";
+// ********************
+// Initialization
+// ********************
 
-  for (const exerciseLog of exerciseLogs) {
-    const exerciseId = exerciseLog.exerciseId._id;
-    const exerciseName = exerciseLog.exerciseId.name;
-    const sets = exerciseLog.sets;
-    const reps = exerciseLog.reps;
-    const weight = exerciseLog.weight;
-
-    const div = document.createElement("div");
-    div.setAttribute("data-exercise-id", exerciseId);
-    div.innerHTML = `
-      <span>${exerciseName}: ${sets} sets x ${reps} reps @ ${weight} lbs</span>
-    `;
-    workoutExercises.appendChild(div);
-  }
-}
 const workoutName = "My Workout";
 
 (async () => {
-  await createWorkout(workoutName);
+  await createNewWorkout(workoutName);
 })();
