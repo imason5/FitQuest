@@ -162,34 +162,4 @@ router.put("/finish-workout/:workoutId", isLoggedIn, async (req, res) => {
   }
 });
 
-// Route to fetch a workout along with its exercise logs
-router.get("/workout-with-logs/:workoutId", async (req, res) => {
-  const workoutId = req.params.workoutId;
-
-  try {
-    const workout = await Workout.findById(workoutId).populate("exerciseLogs");
-    res.status(200).json(workout);
-  } catch (error) {
-    console.error("Error fetching workout with exercise logs:", error);
-    res.sendStatus(500);
-  }
-});
-
-// Route to fetch the most recent workout - for testing
-// const getMostRecentWorkout = async () => {
-//   try {
-//     const workout = await Workout.findOne()
-//       .sort({ createdAt: -1 })
-//       .populate("exerciseLogs");
-//     return workout;
-//   } catch (error) {
-//     console.error("Error fetching the most recent workout:", error);
-//   }
-// };
-
-// (async () => {
-//   const mostRecentWorkout = await getMostRecentWorkout();
-//   console.log("Most Recent Workout:", mostRecentWorkout);
-// })();
-
 module.exports = router;
