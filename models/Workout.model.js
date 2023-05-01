@@ -1,10 +1,14 @@
 const { Schema, model } = require("mongoose");
 
-// Workout describes a workout session that consists of multiple ExerciseLog instances.
-const workoutSchema = new mongoose.Schema({
+const workoutSchema = new Schema({
   userId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: "User",
+    required: true,
+  },
+  completed: { type: Boolean, default: false },
+  name: {
+    type: String,
     required: true,
   },
   date: {
@@ -33,7 +37,7 @@ const workoutSchema = new mongoose.Schema({
   },
   exerciseLogs: [
     {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "ExerciseLog",
     },
   ],

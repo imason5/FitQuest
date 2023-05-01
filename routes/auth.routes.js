@@ -45,7 +45,7 @@ router.post("/signup", validateSignupInput, async (req, res, next) => {
           // When psw is not strong enough
           res.render("auth/signup", {
             username: req.body.username,
-            errorMessage: "Password is not strong enought",
+            errorMessage: "Password is not strong enough",
           });
         }
       } else {
