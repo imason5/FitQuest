@@ -41,14 +41,12 @@ router.get("/search", async (req, res) => {
 
 // Route to save an exercise log
 router.post("/exercise-log", isLoggedIn, async (req, res) => {
-  const { workoutId, exerciseId, sets, reps, weight } = req.body;
+  const { workoutId, exerciseId, sets } = req.body;
 
   const exerciseLog = new ExerciseLog({
     workoutId,
     exerciseId,
     sets,
-    reps,
-    weight,
   });
 
   try {
@@ -59,6 +57,7 @@ router.post("/exercise-log", isLoggedIn, async (req, res) => {
     });
 
     res.sendStatus(200);
+    console.log("Received sets:", req.body.sets);
   } catch (error) {
     console.error("Error saving ExerciseLog:", error);
     res.sendStatus(500);

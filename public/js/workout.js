@@ -1,5 +1,3 @@
-import { finishWorkout } from "./workoutSave.js";
-
 document.addEventListener("DOMContentLoaded", async () => {
   // ********************
   // DOM manipulation functions
@@ -108,11 +106,22 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.addEventListener("click", async (e) => {
     if (e.target.classList.contains("add-exercise")) {
       const exerciseId = e.target.dataset.id;
-      const sets = 3;
-      const reps = 10;
-      const weight = 100;
+
+      const setElements = document.querySelectorAll(".set-row");
+      const sets = [];
+      for (const setElement of setElements) {
+        const weightInput = setElement.querySelector(".weight-input");
+        const repsInput = setElement.querySelector(".reps-input");
+
+        sets.push({
+          weight: parseFloat(weightInput.value) || 0,
+          reps: parseInt(repsInput.value) || 0,
+        });
+      }
 
       console.log("Workout ID before sending request:", workoutId);
+
+      console.log("Sets before sending request:", sets);
 
       const response = await fetch("/workout/exercise-log", {
         method: "POST",
@@ -123,21 +132,13 @@ document.addEventListener("DOMContentLoaded", async () => {
           workoutId,
           exerciseId,
           sets,
-          reps,
-          weight,
         }),
       });
 
       if (response.ok) {
         console.log("Exercise added to current workout");
         const exerciseName = e.target.previousElementSibling.textContent;
-        displayCurrentWorkoutExercise(
-          exerciseId,
-          exerciseName,
-          sets,
-          reps,
-          weight
-        );
+        displayCurrentWorkoutExercise(exerciseId, exerciseName, sets);
       } else {
         console.error("Error adding exercise to current workout");
       }
@@ -150,6 +151,34 @@ document.addEventListener("DOMContentLoaded", async () => {
     .addEventListener("click", async () => {
       await finishWorkout(workoutId, displayWorkoutExercises);
     });
+
+  async function finishWorkout(workoutId, displayWorkoutExercises) {
+    console.log("Finish Workout button clicked");
+    const response = await fetch(`/workout/finish-workout/${workoutId}`, {
+      method: "PUT",
+    });
+
+    if (response.ok) {
+      console.log("Workout finished");
+
+      // Fetch the workout and its exercise logs
+      const workoutResponse = await fetch(`/workout/get-workout/${workoutId}`);
+      const exerciseLogsResponse = await fetch(
+        `/workout/exercise-log/${workoutId}`
+      );
+      console.log("exerciseLogsResponse:", exerciseLogsResponse);
+
+      if (workoutResponse.ok && exerciseLogsResponse.ok) {
+        const exerciseLogs = await exerciseLogsResponse.json();
+        displayWorkoutExercises(exerciseLogs);
+      } else {
+        console.error("Error fetching workout or exercise logs");
+      }
+    } else {
+      console.error("Error finishing workout");
+    }
+  }
+
   // ********************
   // Initialization
   // ********************
