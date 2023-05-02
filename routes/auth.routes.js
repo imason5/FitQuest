@@ -1,6 +1,7 @@
 const express = require("express");
-const User = require("../models/User.model");
 const router = express.Router();
+const User = require("../models/User.model");
+
 const bcryptjs = require("bcryptjs");
 const { validateSignupInput } = require("../middleware/inputValidation");
 const { isLoggedIn, isLoggedOut } = require("../middleware/route-guard");
@@ -18,13 +19,10 @@ router.get("/signup", (req, res, next) => {
 /* --- POST: signup page --- */
 router.post(
   "/signup",
-  /*validateSignupInput,*/
+  validateSignupInput,
   uploader.single("imageUrl"),
   async (req, res, next) => {
     try {
-      console.log("req.body: ", req.body);
-      console.log("req.file: ", req.file);
-
       const isExistingUsername = await User.findOne({
         username: req.body.username,
       });
@@ -37,16 +35,6 @@ router.post(
           if (pwdRegex.test(req.body.password)) {
             const salt = bcryptjs.genSaltSync(roundOfSalt);
             const passwordHash = bcryptjs.hashSync(req.body.password, salt);
-
-            //get the file url from cloudinary
-            console.log("file is: ", req.file);
-
-            if (!req.file) {
-              console.log("there was an error uploading the file");
-              next(new Error("No file uploaded!"));
-              return;
-            }
-
             // Create a new user via User model
             await User.create({
               username: req.body.username,
