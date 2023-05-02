@@ -95,9 +95,44 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (response.ok) {
       console.log("Workout finished");
+      const workout = await response.json();
+      return workout;
     } else {
       console.error("Error finishing workout");
+      return null;
     }
+  }
+
+  function displayWorkoutSummaryModal(workout) {
+    // Create the modal container
+    const modal = document.createElement("div");
+    modal.classList.add("modal");
+
+    // Create the modal content container
+    const modalContent = document.createElement("div");
+    modalContent.classList.add("modal-content");
+
+    // Add the workout summary to the modal content
+    modalContent.innerHTML = `
+      <h3>Workout Summary</h3>
+      <p>Total Duration: ${workout.totalDuration} minutes</p>
+      <p>Total Weight: ${workout.totalWeight} kgs</p>
+      <p>Total Distance: ${workout.totalDistance} miles</p>
+      <p>Total Points: ${workout.totalPoints}</p>
+      <p>Notes: ${workout.notes}</p>
+      <button class="close-modal">Close</button>
+    `;
+
+    // Add the modal content to the modal container
+    modal.appendChild(modalContent);
+
+    // Add the modal to the body
+    document.body.appendChild(modal);
+
+    // Add event listener to close the modal
+    document.querySelector(".close-modal").addEventListener("click", () => {
+      document.body.removeChild(modal);
+    });
   }
 
   // ********************
@@ -230,7 +265,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   document
     .getElementById("finish-workout")
     .addEventListener("click", async () => {
-      await finishWorkout(workoutId);
+      const workout = await finishWorkout(workoutId);
+      if (workout) {
+        displayWorkoutSummaryModal(workout);
+      }
     });
 
   // ********************
