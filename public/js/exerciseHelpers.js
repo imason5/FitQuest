@@ -23,7 +23,7 @@ async function storeExercise(apiData, searchTerm) {
   return exerciseId;
 }
 
-//converts the API data into a format that the database can understand
+//Converts the API data into a format that the database can understand
 function transformExerciseData(apiData) {
   return {
     name: apiData.name,

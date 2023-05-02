@@ -1,5 +1,16 @@
 const { Schema, model } = require("mongoose");
 
+const setSchema = new Schema({
+  reps: {
+    type: Number,
+    default: 0,
+  },
+  weight: {
+    type: Number,
+    default: 0,
+  },
+});
+
 const exerciseLogSchema = new Schema({
   workoutId: {
     type: Schema.Types.ObjectId,
@@ -9,20 +20,14 @@ const exerciseLogSchema = new Schema({
   exerciseId: {
     type: Schema.Types.ObjectId,
     ref: "Exercise",
-    required: true,
+    // required: true,
   },
-  sets: {
-    type: Number,
-    required: true,
-  },
-  reps: {
-    type: Number,
-    required: true,
-  },
-  weight: {
+  sets: [setSchema],
+  points: {
     type: Number,
     default: 0,
   },
+
   distance: {
     type: Number,
     default: 0,
