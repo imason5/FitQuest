@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Handles adding an exercise to the current workout. Gets the exercise ID from the button's data-id attribute. Gets the sets from the input fields in the DOM. Sends a POST request to the API to add the exercise to the current workout. If the request is successful, calls the displayCurrentWorkoutExercise function to display the exercise in the current workout container.
   async function handleAddExercise(e) {
-    const exerciseId = e.target.dataset.id;
+    const exerciseId = e.target.dataset.id; // Get the exercise ID from the button's data-id attribute.
     const setElements = document.querySelectorAll(".set-row");
     const sets = [];
     for (const setElement of setElements) {
@@ -120,7 +120,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     if (response.ok) {
-      const exerciseName = e.target.previousElementSibling.textContent;
+      const exerciseName = e.target.previousElementSibling.textContent; // Get the exercise name from the button's previous sibling. This is the span element that contains the exercise name. This is a bit hacky, but it works.
       displayCurrentWorkoutExercise(exerciseId, exerciseName, sets);
     } else {
       console.error("Error adding exercise to current workout");
