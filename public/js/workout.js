@@ -24,11 +24,42 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const div = document.createElement("div");
       div.innerHTML = `
-      <span>${exercise.name}</span>
-      <button class="add-exercise" data-id="${exercise._id}" data-type="${exercise.type}" data-difficulty="${exercise.difficulty}">Add to workout</button>
-    `;
+        <span>${exercise.name}</span>
+        <button class="add-exercise" data-id="${exercise._id}" data-type="${exercise.type}" data-difficulty="${exercise.difficulty}">Add to workout</button>
+        <button class="more-info" data-equipment="${exercise.equipment}" data-instructions="${exercise.instructions}">More Info</button>
+      `;
       searchResults.appendChild(div);
     }
+  }
+
+  function displayMoreInfoModal(equipment, instructions) {
+    // Create the modal container
+    const modal = document.createElement("div");
+    modal.classList.add("modal");
+
+    // Create the modal content container
+    const modalContent = document.createElement("div");
+    modalContent.classList.add("modal-content");
+
+    // Add the equipment and instructions to the modal content
+    modalContent.innerHTML = `
+      <h3>Equipment</h3>
+      <p>${equipment}</p>
+      <h3>Instructions</h3>
+      <p>${instructions}</p>
+      <button class="close-modal">Close</button>
+    `;
+
+    // Add the modal content to the modal container
+    modal.appendChild(modalContent);
+
+    // Add the modal to the body
+    document.body.appendChild(modal);
+
+    // Add event listener to close the modal
+    document.querySelector(".close-modal").addEventListener("click", () => {
+      document.body.removeChild(modal);
+    });
   }
 
   // Displays a new card in the current workout container with the given exercise name. Uses the exercise-card-template in the HTML file.
@@ -186,6 +217,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
+  // Event listener for button for more info button
+  document.addEventListener("click", (event) => {
+    if (event.target.classList.contains("more-info")) {
+      const equipment = event.target.dataset.equipment;
+      const instructions = event.target.dataset.instructions;
+      displayMoreInfoModal(equipment, instructions);
+    }
+  });
+
   // Event listener for button to finish workout
   document
     .getElementById("finish-workout")
@@ -204,6 +244,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     month: "long",
     day: "numeric",
     ordinal: "auto",
+    hour: "numeric",
+    minute: "numeric",
   };
   const formattedDate = now.toLocaleDateString("en-US", options);
   const workoutName = `${formattedDate}`;
