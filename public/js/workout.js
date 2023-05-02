@@ -43,7 +43,50 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Will handle the Finish Workout logic
   async function finishWorkout(workoutId) {
+    if (!workoutId) {
+      console.error("Workout ID is not set. Unable to finish workout.");
+      return;
+    }
+
     console.log("Finish Workout button clicked");
+
+    const exerciseCards = document.querySelectorAll("#currentWorkout .card");
+
+    for (const exerciseCard of exerciseCards) {
+      const exerciseId = exerciseCard.getAttribute("data-exercise-id");
+      const setRows = exerciseCard.querySelectorAll(".set-row");
+      const sets = [];
+
+      for (const setRow of setRows) {
+        const weightInput = setRow.querySelector(".weight-input");
+        const repsInput = setRow.querySelector(".reps-input");
+
+        sets.push({
+          weight: parseFloat(weightInput.value) || 0,
+          reps: parseInt(repsInput.value) || 0,
+        });
+      }
+
+      console.log("Sets before sending request:", sets);
+
+      const response = await fetch("/workout/exercise-log", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          workoutId,
+          exerciseId,
+          sets,
+        }),
+      });
+
+      if (!response.ok) {
+        console.error("Error adding exercise to current workout");
+      }
+    }
+
+    console.log("Workout finished");
   }
 
   // ********************
@@ -105,6 +148,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
     }
 
+    console.log("Exercise ID:", exerciseId);
+    console.log("Workout ID:", workoutId);
     console.log("Sets before sending request:", sets);
 
     const response = await fetch("/workout/exercise-log", {
@@ -147,14 +192,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   document
     .getElementById("finish-workout")
     .addEventListener("click", async () => {
-      await finishWorkout(workoutId, displayWorkoutExercises);
+      await finishWorkout(workoutId);
     });
 
   // ********************
   // Initialization
   // ********************
 
-  const workoutName = "My Workout";
+  const now = new Date();
+  const formattedDate = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
+  const workoutName = `My Workout - ${formattedDate}`;
 
   (async () => {
     await createNewWorkout(workoutName);

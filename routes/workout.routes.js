@@ -43,6 +43,9 @@ router.get("/search", async (req, res) => {
 router.post("/exercise-log", isLoggedIn, async (req, res) => {
   const { workoutId, exerciseId, sets } = req.body;
 
+  console.log("workoutId (before creating ExerciseLog):", workoutId);
+  console.log("exerciseId (before creating ExerciseLog):", exerciseId);
+  console.log("sets (before creating ExerciseLog):", sets);
   const exerciseLog = new ExerciseLog({
     workoutId,
     exerciseId,
@@ -57,7 +60,9 @@ router.post("/exercise-log", isLoggedIn, async (req, res) => {
     });
 
     res.sendStatus(200);
-    console.log("Received sets:", req.body.sets);
+    console.log("Received workoutId:", workoutId);
+    console.log("Received exerciseId:", exerciseId);
+    console.log("Received sets:", sets);
   } catch (error) {
     console.error("Error saving ExerciseLog:", error);
     res.sendStatus(500);

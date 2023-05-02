@@ -20,7 +20,7 @@ const exerciseLogSchema = new Schema({
   exerciseId: {
     type: Schema.Types.ObjectId,
     ref: "Exercise",
-    required: true,
+    // required: true,
   },
   sets: [setSchema],
   points: {
