@@ -14,6 +14,8 @@ const ExerciseLog = require("../models/ExerciseLog.model");
 const Workout = require("../models/Workout.model");
 const User = require("../models/User.model");
 
+const { calculateTotalWeight } = require("../utils/workout.helpers");
+
 // Route to search for exercises (API call)
 router.get("/search", async (req, res) => {
   const { search } = req.query;
@@ -151,15 +153,36 @@ router.put("/finish-workout/:workoutId", isLoggedIn, async (req, res) => {
   const workoutId = req.params.workoutId;
 
   try {
+    // Retrieve the workout and exercise logs associated with the workoutId
+    const workout = await Workout.findById(workoutId).populate({
+      path: "exerciseLogs",
+      populate: {
+        path: "exerciseId",
+      },
+    });
+
+    if (!workout) {
+      return res.status(404).send("Workout not found");
+    }
+
+    // Use the helper function to calculate total weight
+    const totalWeight = calculateTotalWeight(workout.exerciseLogs);
+    console.log("Total weight calculated:", totalWeight);
+
+    // Update the workout with the calculated total weight and set completed to true
     const updatedWorkout = await Workout.findByIdAndUpdate(
       workoutId,
       {
+        totalWeight: totalWeight,
         completed: true,
       },
       { new: true }
     );
-    console.log("Updated Workout:", updatedWorkout);
-    res.sendStatus(200);
+
+    console.log("Updated workout:", updatedWorkout);
+
+    // Send the updated workout as a response
+    res.status(200).send(updatedWorkout);
   } catch (error) {
     console.error("Error finishing workout:", error);
     res.sendStatus(500);

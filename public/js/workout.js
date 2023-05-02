@@ -48,45 +48,15 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-    console.log("Finish Workout button clicked");
+    const response = await fetch(`/workout/finish-workout/${workoutId}`, {
+      method: "PUT",
+    });
 
-    const exerciseCards = document.querySelectorAll("#currentWorkout .card");
-
-    for (const exerciseCard of exerciseCards) {
-      const exerciseId = exerciseCard.getAttribute("data-exercise-id");
-      const setRows = exerciseCard.querySelectorAll(".set-row");
-      const sets = [];
-
-      for (const setRow of setRows) {
-        const weightInput = setRow.querySelector(".weight-input");
-        const repsInput = setRow.querySelector(".reps-input");
-
-        sets.push({
-          weight: parseFloat(weightInput.value) || 0,
-          reps: parseInt(repsInput.value) || 0,
-        });
-      }
-
-      console.log("Sets before sending request:", sets);
-
-      const response = await fetch("/workout/exercise-log", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          workoutId,
-          exerciseId,
-          sets,
-        }),
-      });
-
-      if (!response.ok) {
-        console.error("Error adding exercise to current workout");
-      }
+    if (response.ok) {
+      console.log("Workout finished");
+    } else {
+      console.error("Error finishing workout");
     }
-
-    console.log("Workout finished");
   }
 
   // ********************
@@ -135,41 +105,56 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Handles adding an exercise to the current workout. Gets the exercise ID from the button's data-id attribute. Gets the sets from the input fields in the DOM. Sends a POST request to the API to add the exercise to the current workout. If the request is successful, calls the displayCurrentWorkoutExercise function to display the exercise in the current workout container.
   async function handleAddExercise(e) {
-    const exerciseId = e.target.dataset.id; // Get the exercise ID from the button's data-id attribute.
-    const setElements = document.querySelectorAll(".set-row");
-    const sets = [];
-    for (const setElement of setElements) {
-      const weightInput = setElement.querySelector(".weight-input");
-      const repsInput = setElement.querySelector(".reps-input");
+    const exerciseId = e.target.dataset.id;
+    const exerciseName = e.target.previousElementSibling.textContent;
 
-      sets.push({
-        weight: parseFloat(weightInput.value) || 0,
-        reps: parseInt(repsInput.value) || 0,
-      });
-    }
+    // Display the exercise in the current workout container
+    displayCurrentWorkoutExercise(exerciseId, exerciseName);
 
-    console.log("Exercise ID:", exerciseId);
-    console.log("Workout ID:", workoutId);
-    console.log("Sets before sending request:", sets);
+    // Attach an event listener to the last added card for changes in input fields
+    const currentWorkout = document.getElementById("currentWorkout");
+    const lastAddedCard = currentWorkout.lastElementChild;
 
-    const response = await fetch("/workout/exercise-log", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        workoutId,
-        exerciseId,
-        sets,
-      }),
+    lastAddedCard.addEventListener("input", async (event) => {
+      if (
+        event.target.classList.contains("weight-input") ||
+        event.target.classList.contains("reps-input")
+      ) {
+        // Get the updated sets
+        const setRows = lastAddedCard.querySelectorAll(".set-row");
+        const sets = [];
+
+        for (const setRow of setRows) {
+          const weightInput = setRow.querySelector(".weight-input");
+          const repsInput = setRow.querySelector(".reps-input");
+
+          sets.push({
+            weight: parseFloat(weightInput.value) || 0,
+            reps: parseInt(repsInput.value) || 0,
+          });
+        }
+
+        console.log("Exercise ID:", exerciseId);
+        console.log("Workout ID:", workoutId);
+        console.log("Sets before sending request:", sets);
+
+        const response = await fetch("/workout/exercise-log", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            workoutId,
+            exerciseId,
+            sets,
+          }),
+        });
+
+        if (!response.ok) {
+          console.error("Error updating exercise log");
+        }
+      }
     });
-
-    if (response.ok) {
-      const exerciseName = e.target.previousElementSibling.textContent; // Get the exercise name from the button's previous sibling. This is the span element that contains the exercise name. This is a bit hacky, but it works.
-      displayCurrentWorkoutExercise(exerciseId, exerciseName, sets);
-    } else {
-      console.error("Error adding exercise to current workout");
-    }
   }
 
   // ********************
