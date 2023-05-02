@@ -3,8 +3,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   // DOM manipulation functions
   // ********************
 
+  let workoutId;
+
+  // Displays search results in the HTML page. Creates a new div element for each exercise in the exercises array, with a name and a button to add the exercise to the current workout.
   function displaySearchResults(exercises) {
-    console.log("Exercises array:", exercises);
     const searchResults = document.getElementById("searchResults");
     searchResults.innerHTML = "";
 
@@ -23,27 +25,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  function displayWorkoutExercises(exerciseLogs) {
-    console.log("Displaying workout exercises:", exerciseLogs);
-    const workoutExercises = document.getElementById("workoutExercises");
-    workoutExercises.innerHTML = "";
-
-    for (const exerciseLog of exerciseLogs) {
-      const exerciseId = exerciseLog.exerciseId._id;
-      const exerciseName = exerciseLog.exerciseId.name;
-      const sets = exerciseLog.sets;
-      const reps = exerciseLog.reps;
-      const weight = exerciseLog.weight;
-
-      const div = document.createElement("div");
-      div.setAttribute("data-exercise-id", exerciseId);
-      div.innerHTML = `
-      <span>${exerciseName}: ${sets} sets x ${reps} reps @ ${weight} lbs</span>
-    `;
-      workoutExercises.appendChild(div);
-    }
-  }
-
+  // Displays a new card in the current workout container with the given exercise name. Uses the exercise-card-template in the HTML file.
   function displayCurrentWorkoutExercise(exerciseId, exerciseName) {
     const currentWorkout = document.getElementById("currentWorkout");
     const template = document.getElementById("exercise-card-template");
@@ -58,12 +40,34 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Append the card to the current workout container
     currentWorkout.appendChild(card);
   }
-  let workoutId;
+
+  // Will handle the Finish Workout logic
+  async function finishWorkout(workoutId) {
+    console.log("Finish Workout button clicked");
+  }
 
   // ********************
   // API interaction functions
   // ********************
 
+  // Handles search form submission. Gets the search term from the input field and calls the fetchExercises function to get the exercises from the API. Then calls the displaySearchResults function to display the results.
+  async function searchExercises(e) {
+    e.preventDefault();
+    const search = document.getElementById("search").value;
+    const exercises = await fetchExercises(
+      `/workout/search?search=${encodeURIComponent(search)}`
+    );
+    displaySearchResults(exercises);
+  }
+
+  // Fetches exercises from the API. Returns an array of exercises.
+  async function fetchExercises(url) {
+    const response = await fetch(url);
+    const data = await response.json();
+    return data;
+  }
+
+  // Sends a POST request to create a new workout with the given name and sets workoutId to the created workout's ID.
   async function createNewWorkout(name) {
     const response = await fetch("/workout/create-workout", {
       method: "POST",
@@ -86,62 +90,56 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
+  // Handles adding an exercise to the current workout. Gets the exercise ID from the button's data-id attribute. Gets the sets from the input fields in the DOM. Sends a POST request to the API to add the exercise to the current workout. If the request is successful, calls the displayCurrentWorkoutExercise function to display the exercise in the current workout container.
+  async function handleAddExercise(e) {
+    const exerciseId = e.target.dataset.id;
+    const setElements = document.querySelectorAll(".set-row");
+    const sets = [];
+    for (const setElement of setElements) {
+      const weightInput = setElement.querySelector(".weight-input");
+      const repsInput = setElement.querySelector(".reps-input");
+
+      sets.push({
+        weight: parseFloat(weightInput.value) || 0,
+        reps: parseInt(repsInput.value) || 0,
+      });
+    }
+
+    console.log("Sets before sending request:", sets);
+
+    const response = await fetch("/workout/exercise-log", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        workoutId,
+        exerciseId,
+        sets,
+      }),
+    });
+
+    if (response.ok) {
+      const exerciseName = e.target.previousElementSibling.textContent;
+      displayCurrentWorkoutExercise(exerciseId, exerciseName, sets);
+    } else {
+      console.error("Error adding exercise to current workout");
+    }
+  }
+
   // ********************
   // Event listeners
   // ********************
 
+  // Event listener for search form
   document
     .getElementById("searchForm")
-    .addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const search = document.getElementById("search").value;
-      const response = await fetch(
-        `/workout/search?search=${encodeURIComponent(search)}`
-      );
-      const exercises = await response.json();
-      displaySearchResults(exercises);
-    });
+    .addEventListener("submit", searchExercises);
 
   // Event listener for button to add exercise to workout
   document.addEventListener("click", async (e) => {
     if (e.target.classList.contains("add-exercise")) {
-      const exerciseId = e.target.dataset.id;
-
-      const setElements = document.querySelectorAll(".set-row");
-      const sets = [];
-      for (const setElement of setElements) {
-        const weightInput = setElement.querySelector(".weight-input");
-        const repsInput = setElement.querySelector(".reps-input");
-
-        sets.push({
-          weight: parseFloat(weightInput.value) || 0,
-          reps: parseInt(repsInput.value) || 0,
-        });
-      }
-
-      console.log("Workout ID before sending request:", workoutId);
-
-      console.log("Sets before sending request:", sets);
-
-      const response = await fetch("/workout/exercise-log", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          workoutId,
-          exerciseId,
-          sets,
-        }),
-      });
-
-      if (response.ok) {
-        console.log("Exercise added to current workout");
-        const exerciseName = e.target.previousElementSibling.textContent;
-        displayCurrentWorkoutExercise(exerciseId, exerciseName, sets);
-      } else {
-        console.error("Error adding exercise to current workout");
-      }
+      await handleAddExercise(e);
     }
   });
 
@@ -151,33 +149,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     .addEventListener("click", async () => {
       await finishWorkout(workoutId, displayWorkoutExercises);
     });
-
-  async function finishWorkout(workoutId, displayWorkoutExercises) {
-    console.log("Finish Workout button clicked");
-    const response = await fetch(`/workout/finish-workout/${workoutId}`, {
-      method: "PUT",
-    });
-
-    if (response.ok) {
-      console.log("Workout finished");
-
-      // Fetch the workout and its exercise logs
-      const workoutResponse = await fetch(`/workout/get-workout/${workoutId}`);
-      const exerciseLogsResponse = await fetch(
-        `/workout/exercise-log/${workoutId}`
-      );
-      console.log("exerciseLogsResponse:", exerciseLogsResponse);
-
-      if (workoutResponse.ok && exerciseLogsResponse.ok) {
-        const exerciseLogs = await exerciseLogsResponse.json();
-        displayWorkoutExercises(exerciseLogs);
-      } else {
-        console.error("Error fetching workout or exercise logs");
-      }
-    } else {
-      console.error("Error finishing workout");
-    }
-  }
 
   // ********************
   // Initialization
