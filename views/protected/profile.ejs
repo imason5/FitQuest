@@ -1,17 +1,23 @@
 <div class="container">
   <h1>Profile Page</h1>
-  <div id="personalInfo">
+  <div id="personalInfo-container">
     <h3>Personal Info</h3>
-    <img src="#" alt="profile-pic" />
-    <ul>
-      <li>Username: <%- loggedInUser.username %></li>
-      <li>Email: <%- loggedInUser.email %></li>
-      <li>Age: <%- loggedInUser.age %></li>
-      <li>Gender: <%- loggedInUser.gender %></li>
-      <li>Weight: <%- loggedInUser.weight %></li>
-      <li>Height: <%- loggedInUser.height %></li>
-      <li>Bio: <%- loggedInUser.bio %></li>
-    </ul>
+    <div class="personalInfo">
+      <img
+        class="personalInfo-image"
+        src="<%- loggedInUser.profilePic %>"
+        alt="profile-pic"
+      />
+      <ul class="personalInfo-texts">
+        <li>Username: <%- loggedInUser.username %></li>
+        <li>Email: <%- loggedInUser.email %></li>
+        <li>Age: <%- loggedInUser.age %></li>
+        <li>Gender: <%- loggedInUser.gender %></li>
+        <li>Weight: <%- loggedInUser.weight %></li>
+        <li>Height: <%- loggedInUser.height %></li>
+        <li>Bio: <%- loggedInUser.bio %></li>
+      </ul>
+    </div>
   </div>
   <button
     class="btn btn-primary button-accent"
@@ -31,7 +37,12 @@
   <a class="btn btn-primary" href="/logout">Log Out</a>
 
   <dialog id="pop-up">
-    <form name="profile" action="/profile" method="post">
+    <form
+      name="profile"
+      action="/profile"
+      method="post"
+      enctype="multipart/form-data"
+    >
       <h3>Edit Profile</h3>
       <input type="hidden" name="userId" value="<%- loggedInUser._id %>" />
       <label for="username" class="edit-input">
@@ -110,6 +121,10 @@
         <textarea name="bio" id="bio" cols="50" rows="2" class="form-control">
   <%- loggedInUser.bio %></textarea
         >
+      </label>
+      <label for="imageUrl">
+        <p>Profile Pic:</p>
+        <input type="file" name="imageUrl" accept="image/png, image/jpg" />
       </label>
       <br />
       <div class="button-group">

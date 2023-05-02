@@ -1,5 +1,5 @@
 <h1>Signup Page</h1>
-<form action="/signup" method="post">
+<form action="/signup" method="post" enctype="multipart/form-data">
   <label for="username">
     <p>Username:</p>
     <input
@@ -34,25 +34,25 @@
     />
   </label>
   <label for="age">
-    Age:
+    <p>Age:</p>
     <input type="number" name="age" min="0" class="form-control" />
   </label>
   <label for="gender">
-    Gender:
+    <p>Gender:</p>
     <input type="radio" name="gender" value="male" />Male
     <input type="radio" name="gender" value="female" />Female
     <input type="radio" name="gender" value="other" />Other
   </label>
   <label for="weight">
-    Weight:
+    <p>Weight:</p>
     <input type="number" name="weight" min="0" class="form-control" />
   </label>
   <label for="height">
-    Height:
+    <p>Height:</p>
     <input type="number" name="height" min="0" class="form-control" />
   </label>
   <label for="bio">
-    Bio:
+    <p>Bio:</p>
     <textarea
       name="bio"
       id="bio"
@@ -60,6 +60,10 @@
       rows="2"
       class="form-control"
     ></textarea>
+  </label>
+  <label for="imageUrl">
+    <p>Profile Pic:</p>
+    <input type="file" name="imageUrl" accept="image/png, image/jpg" />
   </label>
   <br />
   <button type="submit" class="btn btn-primary">Signup</button>

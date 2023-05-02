@@ -11,3 +11,14 @@ dialog {
 dialog::backdrop {
   background: rgba(0, 0, 0, 0.8);
 }
+
+.personalInfo {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.personalInfo-image {
+  max-width: 200px;
+  max-height: 200px;
+}
