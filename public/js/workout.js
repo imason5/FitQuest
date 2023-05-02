@@ -1,3 +1,5 @@
+import { finishWorkout } from "./workoutSave.js";
+
 document.addEventListener("DOMContentLoaded", async () => {
   // ********************
   // DOM manipulation functions
@@ -141,38 +143,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     }
   });
+
   // Event listener for button to finish workout
   document
     .getElementById("finish-workout")
     .addEventListener("click", async () => {
-      console.log("Finish Workout button clicked");
-      const response = await fetch(`/workout/finish-workout/${workoutId}`, {
-        method: "PUT",
-      });
-
-      if (response.ok) {
-        console.log("Workout finished");
-
-        // Fetch the workout and its exercise logs
-        const workoutResponse = await fetch(
-          `/workout/get-workout/${workoutId}`
-        );
-        const exerciseLogsResponse = await fetch(
-          `/workout/exercise-log/${workoutId}`
-        );
-        console.log("exerciseLogsResponse:", exerciseLogsResponse);
-
-        if (workoutResponse.ok && exerciseLogsResponse.ok) {
-          const exerciseLogs = await exerciseLogsResponse.json();
-          displayWorkoutExercises(exerciseLogs);
-        } else {
-          console.error("Error fetching workout or exercise logs");
-        }
-      } else {
-        console.error("Error finishing workout");
-      }
+      await finishWorkout(workoutId, displayWorkoutExercises);
     });
-
   // ********************
   // Initialization
   // ********************
