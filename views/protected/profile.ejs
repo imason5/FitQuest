@@ -31,7 +31,16 @@
   </p>
   <div id="personalWorkouts">
     <h3>Personal Workouts</h3>
-    <ul></ul>
+    <div>
+      <% loggedInUserWorkouts.forEach(eachworkout => { %>
+      <div class="eachworkout">
+        <h5>Name: <%- eachworkout.name %></h5>
+        <p>Date: <%- eachworkout.date %></p>
+        <p>Total Duration: <%- eachworkout.totalDuration %></p>
+        <p>Total Weight: <%- eachworkout.totalWeight %></p>
+      </div>
+      <% }) %>
+    </div>
   </div>
   <br />
   <a class="btn btn-primary" href="/logout">Log Out</a>
