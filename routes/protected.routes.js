@@ -20,7 +20,7 @@ router.get("/profile", isLoggedIn, async (req, res, next) => {
   // Changed from "/protected/profile"
   const loggedInUser = req.session.loggedInUser; // return an object
   const loggedInUserWorkouts = await Workout.find(
-    { userId: loggedInUser._id },
+    { userId: loggedInUser._id, completed: true },
     null,
     { sort: { date: -1 } }
   ); // return an array

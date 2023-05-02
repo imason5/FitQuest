@@ -34,10 +34,10 @@
     <div>
       <% loggedInUserWorkouts.forEach(eachworkout => { %>
       <div class="eachworkout">
-        <h5>Name: <%- eachworkout.name %></h5>
-        <p>Date: <%- eachworkout.date %></p>
-        <p>Total Duration: <%- eachworkout.totalDuration %></p>
-        <p>Total Weight: <%- eachworkout.totalWeight %></p>
+        <h5>Workout: <%- eachworkout.name %></h5>
+
+        <p>Total Duration Moved: <%- eachworkout.totalDuration %></p>
+        <p>Total Weight Lifted: <%- eachworkout.totalWeight %>kg</p>
       </div>
       <% }) %>
     </div>

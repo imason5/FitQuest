@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     exercises: [],
   };
 
-  // Displays search results in the HTML page. Creates a new div element for each exercise in the exercises array, with a name and a button to add the exercise to the current workout.
+  // Displays search results in the HTML page. Creates a new div element for each exercise in the exercises array, with a name and a button to add the exercise to the current workout. The button has data attributes to store the exercise ID, type, and difficulty, so that we can use them later when adding the exercise to the workout.
   function displaySearchResults(exercises) {
     const searchResults = document.getElementById("searchResults");
     searchResults.innerHTML = "";
@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const div = document.createElement("div");
       div.innerHTML = `
       <span>${exercise.name}</span>
-      <button class="add-exercise" data-id="${exercise._id}">Add to workout</button>
+      <button class="add-exercise" data-id="${exercise._id}" data-type="${exercise.type}" data-difficulty="${exercise.difficulty}">Add to workout</button>
     `;
       searchResults.appendChild(div);
     }
@@ -115,45 +115,59 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Handles adding an exercise to the current workout. Gets the exercise ID from the button's data-id attribute. Gets the sets from the input fields in the DOM. Sends a POST request to the API to add the exercise to the current workout. If the request is successful, calls the displayCurrentWorkoutExercise function to display the exercise in the current workout container.
   async function handleAddExercise(e) {
-    const exerciseId = e.target.dataset.id;
-    const exerciseName = e.target.previousElementSibling.textContent;
+    if (e.target.classList.contains("add-exercise")) {
+      const exerciseId = e.target.dataset.id;
+      const exerciseName = e.target.previousElementSibling.textContent;
+      const exerciseType = e.target.dataset.type; // Get the exercise type from the data-type attribute
+      const exerciseDifficulty = e.target.dataset.difficulty; // Get the exercise difficulty from the data-difficulty attribute
+      console.log("exerciseType:", exerciseType);
+      console.log("exerciseDifficulty:", exerciseDifficulty);
 
-    // Add the exercise to the workoutData object
-    workoutData.exercises.push({
-      exerciseId,
-      sets: [],
-    });
+      // Add the exercise to the workoutData object
+      workoutData.exercises.push({
+        exerciseId,
+        sets: [],
+        type: exerciseType, // Add the exercise type to the workoutData object
+        difficulty: exerciseDifficulty, // Add the exercise difficulty to the workoutData object
+      });
 
-    // Display the exercise in the current workout container
-    displayCurrentWorkoutExercise(exerciseId, exerciseName);
+      // Display the exercise in the current workout container
+      displayCurrentWorkoutExercise(exerciseId, exerciseName, exerciseType);
 
-    // Attach an event listener to the last added card for changes in input fields
-    const currentWorkout = document.getElementById("currentWorkout");
-    const lastAddedCard = currentWorkout.lastElementChild;
+      // Attach an event listener to the last added card for changes in input fields
+      const currentWorkout = document.getElementById("currentWorkout");
+      const lastAddedCard = currentWorkout.lastElementChild;
 
-    lastAddedCard.addEventListener("input", (event) => {
-      if (
-        event.target.classList.contains("weight-input") ||
-        event.target.classList.contains("reps-input")
-      ) {
-        // Get the updated sets
-        const setRows = lastAddedCard.querySelectorAll(".set-row");
-        const sets = [];
+      lastAddedCard.addEventListener("input", (event) => {
+        if (exerciseType === "cardio") {
+          console.log("Cardio exercise selected");
+          // Add functionality for cardio exercises
+        } else {
+          // Existing functionality for non-cardio exercises
+          if (
+            event.target.classList.contains("weight-input") ||
+            event.target.classList.contains("reps-input")
+          ) {
+            // Get the updated sets
+            const setRows = lastAddedCard.querySelectorAll(".set-row");
+            const sets = [];
 
-        for (const setRow of setRows) {
-          const weightInput = setRow.querySelector(".weight-input");
-          const repsInput = setRow.querySelector(".reps-input");
+            for (const setRow of setRows) {
+              const weightInput = setRow.querySelector(".weight-input");
+              const repsInput = setRow.querySelector(".reps-input");
 
-          sets.push({
-            weight: parseFloat(weightInput.value) || 0,
-            reps: parseInt(repsInput.value) || 0,
-          });
+              sets.push({
+                weight: parseFloat(weightInput.value) || 0,
+                reps: parseInt(repsInput.value) || 0,
+              });
+            }
+
+            // Update the sets in the workoutData object
+            workoutData.exercises[workoutData.exercises.length - 1].sets = sets;
+          }
         }
-
-        // Update the sets in the workoutData object
-        workoutData.exercises[workoutData.exercises.length - 1].sets = sets;
-      }
-    });
+      });
+    }
   }
 
   // ********************
@@ -184,8 +198,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ********************
 
   const now = new Date();
-  const formattedDate = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
-  const workoutName = `My Workout - ${formattedDate}`;
+  const options = {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    ordinal: "auto",
+  };
+  const formattedDate = now.toLocaleDateString("en-US", options);
+  const workoutName = `${formattedDate}`;
 
   (async () => {
     await createNewWorkout(workoutName);
