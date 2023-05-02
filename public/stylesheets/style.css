@@ -1,20 +1,15 @@
+/* Universal settings */
 * {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  /*background-color: #fff;*/
+  /*border: #00b7ff 1px solid;*/
 }
 
-section {
-  padding: 50px;
-}
-
+/* Optional settings */
 a {
   color: #00b7ff;
 }
 
-h1 {
-  color: 15px;
-}
-
+/* Nav-bar settings */
 .navbar {
   padding: 0;
   margin: 0;
@@ -36,4 +31,45 @@ p {
 
 .form-control {
   width: 100%;
+}
+
+.hero-image-container {
+  padding: 0;
+  margin: 0;
+  height: 80vh;
+  /*opacity: 0.8;*/
+  background-image: url(https://images.unsplash.com/photo-1554284126-aa88f22d8b74?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1894&q=80);
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+.hero-image-texts {
+  position: absolute;
+  bottom: 4rem;
+}
+
+.hero-image-texts span {
+  font-size: 2rem;
+  font-weight: bold;
+  color: white;
+}
+
+.text-background {
+  background-color: black;
+}
+
+/* Footer settings */
+footer {
+  padding: 0;
+  margin: 0;
+  height: 75px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer-texts {
+  color: white;
 }
