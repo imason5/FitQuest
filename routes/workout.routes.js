@@ -151,33 +151,35 @@ router.get("/exercise-log/:workoutId", async (req, res) => {
 // Route to finish a workout
 router.put("/finish-workout/:workoutId", isLoggedIn, async (req, res) => {
   const workoutId = req.params.workoutId;
+  const { workoutId: _workoutId, exercises } = req.body;
 
   try {
+    // Store the exercise logs in the database
+    const exerciseLogIds = [];
+    for (const exercise of exercises) {
+      const exerciseLog = new ExerciseLog({
+        workoutId,
+        exerciseId: exercise.exerciseId,
+        sets: exercise.sets,
+      });
+
+      const savedExerciseLog = await exerciseLog.save();
+      exerciseLogIds.push(savedExerciseLog._id);
+    }
+
     // Retrieve the workout and exercise logs associated with the workoutId
-    const workout = await Workout.findById(workoutId).populate({
-      path: "exerciseLogs",
-      populate: {
-        path: "exerciseId",
-      },
-    });
+    const workout = await Workout.findById(workoutId);
 
     if (!workout) {
       return res.status(404).send("Workout not found");
     }
 
-    // Use the helper function to calculate total weight
-    const totalWeight = calculateTotalWeight(workout.exerciseLogs);
-    console.log("Total weight calculated:", totalWeight);
+    // Update the workout with the exerciseLogIds, total weight, and set completed to true
+    workout.exerciseLogs = exerciseLogIds;
+    workout.totalWeight = calculateTotalWeight(exercises);
+    workout.completed = true;
 
-    // Update the workout with the calculated total weight and set completed to true
-    const updatedWorkout = await Workout.findByIdAndUpdate(
-      workoutId,
-      {
-        totalWeight: totalWeight,
-        completed: true,
-      },
-      { new: true }
-    );
+    const updatedWorkout = await workout.save();
 
     console.log("Updated workout:", updatedWorkout);
 

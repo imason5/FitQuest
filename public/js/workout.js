@@ -5,6 +5,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   let workoutId;
 
+  // Object to store the current workout data
+  let workoutData = {
+    workoutId: null,
+    exercises: [],
+  };
+
   // Displays search results in the HTML page. Creates a new div element for each exercise in the exercises array, with a name and a button to add the exercise to the current workout.
   function displaySearchResults(exercises) {
     const searchResults = document.getElementById("searchResults");
@@ -41,7 +47,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     currentWorkout.appendChild(card);
   }
 
-  // Will handle the Finish Workout logic
+  // Handle the Finish Workout logic
   async function finishWorkout(workoutId) {
     if (!workoutId) {
       console.error("Workout ID is not set. Unable to finish workout.");
@@ -50,6 +56,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const response = await fetch(`/workout/finish-workout/${workoutId}`, {
       method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(workoutData),
     });
 
     if (response.ok) {
@@ -108,6 +118,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     const exerciseId = e.target.dataset.id;
     const exerciseName = e.target.previousElementSibling.textContent;
 
+    // Add the exercise to the workoutData object
+    workoutData.exercises.push({
+      exerciseId,
+      sets: [],
+    });
+
     // Display the exercise in the current workout container
     displayCurrentWorkoutExercise(exerciseId, exerciseName);
 
@@ -115,7 +131,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const currentWorkout = document.getElementById("currentWorkout");
     const lastAddedCard = currentWorkout.lastElementChild;
 
-    lastAddedCard.addEventListener("input", async (event) => {
+    lastAddedCard.addEventListener("input", (event) => {
       if (
         event.target.classList.contains("weight-input") ||
         event.target.classList.contains("reps-input")
@@ -134,25 +150,8 @@ document.addEventListener("DOMContentLoaded", async () => {
           });
         }
 
-        console.log("Exercise ID:", exerciseId);
-        console.log("Workout ID:", workoutId);
-        console.log("Sets before sending request:", sets);
-
-        const response = await fetch("/workout/exercise-log", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            workoutId,
-            exerciseId,
-            sets,
-          }),
-        });
-
-        if (!response.ok) {
-          console.error("Error updating exercise log");
-        }
+        // Update the sets in the workoutData object
+        workoutData.exercises[workoutData.exercises.length - 1].sets = sets;
       }
     });
   }
