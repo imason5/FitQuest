@@ -1,24 +1,32 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/User.model");
 
-const bcryptjs = require("bcryptjs");
+/* --- Import models --- */
+const User = require("../models/User.model");
+const Workout = require("../models/Workout.model");
+
+/* --- Import middlewares --- */
 const { validateSignupInput } = require("../middleware/inputValidation");
 const { isLoggedIn, isLoggedOut } = require("../middleware/route-guard");
-
-//const { render } = require("ejs");
-
 const uploader = require("../middleware/cloudinary.config.js");
 
+/* --- Import bcryptjs --- */
+const bcryptjs = require("bcryptjs");
 const roundOfSalt = 13;
 const pwdRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/;
 
 /* --- GET: profile page --- */
-router.get("/profile", isLoggedIn, (req, res, next) => {
+router.get("/profile", isLoggedIn, async (req, res, next) => {
   // Changed from "/protected/profile"
-  const loggedInUser = req.session.loggedInUser;
-  res.render("protected/profile", { loggedInUser });
-  //console.log(loggedInUser);
+  const loggedInUser = req.session.loggedInUser; // return an object
+  const loggedInUserWorkouts = await Workout.find(
+    { userId: loggedInUser._id },
+    null,
+    { sort: { date: -1 } }
+  ); // return an array
+
+  console.log("loggedInUserWorkouts: ", loggedInUserWorkouts);
+  res.render("protected/profile", { loggedInUser, loggedInUserWorkouts });
 });
 
 /* --- POST: profile page --- */
@@ -30,9 +38,6 @@ router.post(
     try {
       const { username, email, password, userId } = req.body;
       const currentUser = await User.findById(userId);
-
-      console.log("req.body: ", req.body);
-      console.log("req.file: ", req.file);
 
       await User.findOne({ $or: [{ username }, { email }] })
         .then((existingUser) => {
@@ -65,7 +70,11 @@ router.post(
 
             currentUser
               .save()
+              /*.then((loggedInUser) => {
+                console.log("First loggedInUser", loggedInUser);
+              })*/
               .then((loggedInUser) => {
+                console.log("Second loggedInUser", loggedInUser);
                 res.render("protected/profile", { loggedInUser });
               })
               .catch((error) => {
