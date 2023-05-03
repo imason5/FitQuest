@@ -10,4 +10,16 @@ const calculateTotalWeight = (exerciseLogs) => {
   return totalWeight;
 };
 
-module.exports = { calculateTotalWeight };
+const calculateTotalPoints = (exerciseLogs) => {
+  let totalPoints = 0;
+
+  exerciseLogs.forEach((exerciseLog) => {
+    exerciseLog.sets.forEach((set) => {
+      totalPoints += set.weight * set.reps * set.pointsPerKg;
+    });
+  });
+
+  return totalPoints;
+};
+
+module.exports = { calculateTotalWeight, calculateTotalPoints };

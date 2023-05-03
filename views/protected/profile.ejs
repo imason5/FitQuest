@@ -26,7 +26,7 @@
     <%- typeof errorMessage !== 'undefined' ? errorMessage : "" %>
   </p>
   <div id="personalWorkouts">
-    <h3>Personal Workouts</h3>
+    <h3>Workout History</h3>
 
     <div>
       <table class="eachworkout">
@@ -161,8 +161,11 @@
 
   <dialog id="workout-modal">
     <h3>Workout Details</h3>
-    <p>Workout information will go here...</p>
+    <div id="workout-modal-content">
+      <!-- Workout information will be inserted here -->
+    </div>
     <button id="workout-modal-close">Close</button>
   </dialog>
+
+  <script src="/js/profile.js"></script>
 </div>
-<script src="/js/profile.js"></script>

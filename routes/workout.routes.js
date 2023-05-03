@@ -14,7 +14,10 @@ const ExerciseLog = require("../models/ExerciseLog.model");
 const Workout = require("../models/Workout.model");
 const User = require("../models/User.model");
 
-const { calculateTotalWeight } = require("../utils/workout.helpers");
+const {
+  calculateTotalWeight,
+  calculateTotalPoints,
+} = require("../utils/workout.helpers");
 
 // Route to search for exercises (API call)
 router.get("/search", async (req, res) => {
@@ -177,6 +180,7 @@ router.put("/finish-workout/:workoutId", isLoggedIn, async (req, res) => {
     // Update the workout with the exerciseLogIds, total weight, and set completed to true
     workout.exerciseLogs = exerciseLogIds;
     workout.totalWeight = calculateTotalWeight(exercises);
+    workout.totalPoints = calculateTotalPoints(exercises);
     workout.completed = true;
     workout.notes = notes;
 

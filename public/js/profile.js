@@ -28,12 +28,28 @@ function confirmDelete(event, workoutDate) {
 
 const workoutCards = document.querySelectorAll(".workout-card");
 workoutCards.forEach((card) => {
-  card.addEventListener("click", (event) => {
+  card.addEventListener("click", async (event) => {
     const deleteButton = event.target.closest('button[type="submit"]');
 
     if (!deleteButton) {
       console.log("Workout card clicked");
       const workoutModal = document.getElementById("workout-modal");
+      const workoutId = card.dataset.workoutId;
+
+      try {
+        const workoutResponse = await fetch(`workout/get-workout/${workoutId}`);
+        const workout = await workoutResponse.json();
+
+        const exerciseLogsResponse = await fetch(
+          `workout/exercise-log/${workoutId}`
+        );
+        const exerciseLogs = await exerciseLogsResponse.json();
+
+        updateWorkoutModal(workout, exerciseLogs);
+      } catch (error) {
+        console.error("Error fetching workout details:", error);
+      }
+
       if (workoutModal) {
         workoutModal.showModal();
       }
@@ -43,6 +59,84 @@ workoutCards.forEach((card) => {
     }
   });
 });
+
+document
+  .getElementById("workout-modal")
+  .addEventListener("show.bs.modal", async function (event) {
+    // Get the workoutId from the data-workout-id attribute of the element that triggered the modal
+    const workoutId = event.relatedTarget.dataset.workoutId;
+
+    // Fetch the workout data
+    try {
+      const workoutResponse = await fetch(`workout/get-workout/${workoutId}`);
+      const workout = await workoutResponse.json();
+
+      // Fetch the exercise logs for the workout
+      const exerciseLogsResponse = await fetch(
+        `workout/exercise-log/${workoutId}`
+      );
+      const exerciseLogs = await exerciseLogsResponse.json();
+
+      // Update the workout modal's content with the fetched data
+      updateWorkoutModal(workout, exerciseLogs);
+    } catch (error) {
+      console.error("Error fetching workout details:", error);
+    }
+  });
+
+function updateWorkoutModal(workout, exerciseLogs) {
+  const workoutModalContent = document.getElementById("workout-modal-content");
+
+  // Clear the modal content
+  workoutModalContent.innerHTML = "";
+
+  // Create an element to display the workout's date
+  const workoutDate = document.createElement("p");
+  const formattedDate = new Date(workout.date).toLocaleDateString();
+  workoutDate.textContent = `Date: ${formattedDate}`;
+  workoutModalContent.appendChild(workoutDate);
+
+  // Create an element to display the workout's total weight
+  const workoutTotalWeight = document.createElement("p");
+  workoutTotalWeight.textContent = `Total weight lifted: ${workout.totalWeight}kg`;
+  workoutModalContent.appendChild(workoutTotalWeight);
+
+  // Create an element to display the workout's total points
+  const workoutTotalPoints = document.createElement("p");
+  workoutTotalPoints.textContent = `Total points earned: ${workout.totalPoints}`;
+  workoutModalContent.appendChild(workoutTotalPoints);
+
+  // Create an element to display the workout's notes
+  const workoutNotes = document.createElement("p");
+  workoutNotes.textContent = `Notes: ${workout.notes}`;
+  workoutModalContent.appendChild(workoutNotes);
+
+  // Create a list to display the exercise logs
+  const exerciseLogList = document.createElement("ul");
+  workoutModalContent.appendChild(exerciseLogList);
+
+  // Loop through the exercise logs and display their details
+  exerciseLogs.forEach((log) => {
+    const exerciseLogItem = document.createElement("li");
+
+    const exerciseName = document.createElement("h5");
+    exerciseName.textContent = log.exerciseId.name;
+    exerciseLogItem.appendChild(exerciseName);
+
+    const setsList = document.createElement("ul");
+    log.sets.forEach((set, index) => {
+      const setItem = document.createElement("li");
+      const setPoints = set.reps * set.weight * set.pointsPerKg;
+      setItem.textContent = `Set ${index + 1}: ${set.reps} reps, ${
+        set.weight
+      }kg, ${setPoints.toFixed(2)} points`;
+      setsList.appendChild(setItem);
+    });
+
+    exerciseLogItem.appendChild(setsList);
+    exerciseLogList.appendChild(exerciseLogItem);
+  });
+}
 
 const workoutModalCloseButton = document.getElementById("workout-modal-close");
 workoutModalCloseButton.addEventListener("click", () => {
