@@ -32,6 +32,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
+  // Displays a modal with more information about the exercise. Creates a new div element with the equipment and instructions for the exercise. Uses the exercise-card-template in the HTML file.
   function displayMoreInfoModal(equipment, instructions) {
     // Create the modal container
     const modal = document.createElement("div");
@@ -43,11 +44,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Add the equipment and instructions to the modal content
     modalContent.innerHTML = `
-      <h3>Equipment</h3>
-      <p>${equipment}</p>
-      <h3>Instructions</h3>
-      <p>${instructions}</p>
-      <button class="close-modal">Close</button>
+    <h3>Instructions</h3>
+    <p>${instructions}</p>
+    <p><b>Equipment Needed: </b>${
+      equipment.replace("_", " ").charAt(0).toUpperCase() +
+      equipment.replace("_", " ").slice(1)
+    }</p>
+
+    <button class="close-modal">Close</button>
     `;
 
     // Add the modal content to the modal container
@@ -78,32 +82,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     currentWorkout.appendChild(card);
   }
 
-  // Handle the Finish Workout logic
-  async function finishWorkout(workoutId, workoutData) {
-    if (!workoutId) {
-      console.error("Workout ID is not set. Unable to finish workout.");
-      return;
-    }
-
-    console.log("Sending workoutData to server:", workoutData);
-    const response = await fetch(`/workout/finish-workout/${workoutId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(workoutData),
-    });
-
-    if (response.ok) {
-      console.log("Workout finished");
-      const workout = await response.json();
-      return workout;
-    } else {
-      console.error("Error finishing workout");
-      return null;
-    }
-  }
-
+  // Displays the workout summary modal. Creates a new div element with a textarea for notes and a button to save the notes. When the button is clicked, the workout is finished by calling the finishWorkout function. When the workout is finished, the modal content is updated with the workout summary.
   function displayWorkoutSummaryModal() {
     // Create the modal container
     const modal = document.createElement("div");
@@ -118,7 +97,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       <h3>Workout Summary</h3>
       <p>Notes:</p>
       <textarea id="workout-notes"></textarea>
-      <button class="save-notes">Finished</button>
+      <button class="save-notes close-modal">Finished</button>
     `;
 
     // Add the modal content to the modal container
@@ -256,21 +235,31 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // async function updateWorkoutNotes(workoutId, notes) {
-  //   const response = await fetch(`/workout/update-notes/${workoutId}`, {
-  //     method: "PUT",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({ notes }),
-  //   });
+  // Sends a PUT request to the API to finish the workout. Returns the finished workout.
+  async function finishWorkout(workoutId, workoutData) {
+    if (!workoutId) {
+      console.error("Workout ID is not set. Unable to finish workout.");
+      return;
+    }
 
-  //   if (response.ok) {
-  //     console.log("Workout notes updated");
-  //   } else {
-  //     console.error("Error updating workout notes");
-  //   }
-  // }
+    console.log("Sending workoutData to server:", workoutData);
+    const response = await fetch(`/workout/finish-workout/${workoutId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(workoutData),
+    });
+
+    if (response.ok) {
+      console.log("Workout finished");
+      const workout = await response.json();
+      return workout;
+    } else {
+      console.error("Error finishing workout");
+      return null;
+    }
+  }
 
   // ********************
   // Event listeners
