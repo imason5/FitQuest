@@ -39,6 +39,8 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
+              <% if ( typeof navSwitch !== "undefined" && navSwitch === true) {
+              %>
               <li class="nav-item">
                 <a class="nav-link" href="/profile">Profile</a>
               </li>
@@ -46,14 +48,16 @@
                 <a class="nav-link" href="/workout">Workout</a>
               </li>
               <li class="nav-item">
+                <a class="nav-link" href="/logout">Logout</a>
+              </li>
+              <% } else { %>
+              <li class="nav-item">
                 <a class="nav-link" href="/signup">Signup</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="/login">Login</a>
               </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/logout">Logout</a>
-              </li>
+              <% } %>
             </ul>
           </div>
         </div>

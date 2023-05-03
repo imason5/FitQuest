@@ -24,95 +24,83 @@ router.get("/profile", isLoggedIn, async (req, res, next) => {
     null,
     { sort: { date: -1 } }
   ); // return an array
-
-  console.log("loggedInUserWorkouts: ", loggedInUserWorkouts);
   res.render("protected/profile", {
-    isLoggedIn,
     loggedInUser,
     loggedInUserWorkouts,
+    navSwitch: true,
   });
 });
 
 /* --- POST: profile page --- */
-router.post(
-  "/profile",
-  isLoggedIn,
-  uploader.single("imageUrl"),
-  async (req, res, next) => {
-    try {
-      const { username, email, password, userId } = req.body;
-      const currentUser = await User.findById(userId);
+router.post("/profile", uploader.single("imageUrl"), async (req, res, next) => {
+  try {
+    const { username, email, password, userId } = req.body;
+    const currentUser = await User.findById(userId);
 
-      await User.findOne({ $or: [{ username }, { email }] })
-        .then((existingUser) => {
-          const existingUserId = existingUser._id.toString();
+    await User.findOne({ $or: [{ username }, { email }] })
+      .then((existingUser) => {
+        const existingUserId = existingUser._id.toString();
 
-          if (existingUser && existingUserId !== userId) {
+        if (existingUser && existingUserId !== userId) {
+          return res.status(400).render("protected/profile", {
+            loggedInUser: currentUser,
+            errorMessage: "Username or email already taken",
+          });
+        } else if (!existingUser || existingUserId === userId) {
+          currentUser.username = req.body.username;
+          currentUser.email = req.body.email;
+          currentUser.age = req.body.age;
+          currentUser.gender = req.body.gender;
+          currentUser.weight = req.body.weight;
+          currentUser.height = req.body.height;
+          currentUser.bio = req.body.bio;
+          currentUser.profilePic = req.file.path;
+
+          if (password && pwdRegex.test(password)) {
+            const salt = bcryptjs.genSaltSync(roundOfSalt);
+            currentUser.password = bcryptjs.hashSync(password, salt);
+          } else if (password && !pwdRegex.test(password)) {
             return res.status(400).render("protected/profile", {
               loggedInUser: currentUser,
-              errorMessage: "Username or email already taken",
+              errorMessage: "Password is not strong enough",
             });
-          } else if (!existingUser || existingUserId === userId) {
-            currentUser.username = req.body.username;
-            currentUser.email = req.body.email;
-            currentUser.age = req.body.age;
-            currentUser.gender = req.body.gender;
-            currentUser.weight = req.body.weight;
-            currentUser.height = req.body.height;
-            currentUser.bio = req.body.bio;
-            currentUser.profilePic = req.file.path;
-
-            if (password && pwdRegex.test(password)) {
-              const salt = bcryptjs.genSaltSync(roundOfSalt);
-              currentUser.password = bcryptjs.hashSync(password, salt);
-            } else if (password && !pwdRegex.test(password)) {
-              return res.status(400).render("protected/profile", {
-                loggedInUser: currentUser,
-                errorMessage: "Password is not strong enough",
-              });
-            }
-
-            currentUser
-              .save()
-              /*.then((loggedInUser) => {
-                console.log("First loggedInUser", loggedInUser);
-              })*/
-              .then((loggedInUser) => {
-                // console.log("Second loggedInUser", loggedInUser);
-                res.render("protected/profile", { loggedInUser });
-              })
-              .catch((error) => {
-                console.log("Error from saving updated info: ", error);
-              });
           }
-        })
-        .catch((error) => console.log("Error from updating info: ", error));
-    } catch (error) {
-      res.render("protected/profile", {
-        loggedInUser: currentUser,
-        errorMessage: "Error updating profile",
-      });
-    }
+
+          currentUser
+            .save()
+            .then((loggedInUser) => {
+              res.render("protected/profile", {
+                loggedInUser,
+                navSwtich: true,
+              });
+            })
+            .catch((error) => {
+              console.log("Error from saving updated info: ", error);
+            });
+        }
+      })
+      .catch((error) => console.log("Error from updating info: ", error));
+  } catch (error) {
+    res.render("protected/profile", {
+      loggedInUser: currentUser,
+      errorMessage: "Error updating profile",
+    });
   }
-);
+});
 
 /* --- POST: delete one workout on profile page --- */
-router.post(
-  "/profile/workoutsDelete/:workoutId",
-  isLoggedIn,
-  async (req, res) => {
-    try {
-      await Workout.findByIdAndDelete(req.params.workoutId);
-      res.redirect("/profile");
-    } catch (error) {
-      console.log(error);
-    }
+router.post("/profile/workoutsDelete/:workoutId", async (req, res) => {
+  try {
+    await Workout.findByIdAndDelete(req.params.workoutId);
+    res.redirect("/profile");
+  } catch (error) {
+    console.log(error);
   }
-);
+});
 
 // /* --- GET: workout page --- */
 router.get("/workout", isLoggedIn, (req, res, next) => {
-  res.render("protected/workout", { isLoggedIn });
+  res.render("protected/workout", { isLoggedIn, navSwitch: true });
 });
 
 module.exports = router;

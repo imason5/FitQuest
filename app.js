@@ -21,6 +21,9 @@ sessionConfig(app);
 // ℹ️ This function is getting exported from the config folder. It runs most pieces of middleware
 require("./config")(app);
 
+// Get the route-guard middlware
+// const { isLoggedIn, isLoggedOut } = require("../middleware/route-guard");
+
 // default value for title local
 const capitalize = require("./utils/capitalize");
 const projectName = "fitness-tracker";

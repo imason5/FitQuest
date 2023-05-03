@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User.model");
+const Workout = require("../models/Workout.model");
 
 const bcryptjs = require("bcryptjs");
 const { validateSignupInput } = require("../middleware/inputValidation");
@@ -48,12 +49,13 @@ router.post(
               profilePic: req.file.path,
             });
             // After Signing up, then redirect to login page - redirect
-            res.redirect("/login");
+            res.render("auth/login", { navSwitch: false });
           } else {
             // When psw is not strong enough
             res.render("auth/signup", {
               username: req.body.username,
               errorMessage: "Password is not strong enough",
+              navSwitch: false,
             });
           }
         } else {
@@ -62,6 +64,7 @@ router.post(
             username: req.body.username,
             email: req.body.email,
             errorMessage: "Email is in use",
+            navSwitch: false,
           });
         }
       } else {
@@ -69,6 +72,7 @@ router.post(
         res.render("auth/signup", {
           username: req.body.username,
           errorMessage: "Username is in use",
+          navSwitch: false,
         });
       }
     } catch (error) {
@@ -79,7 +83,7 @@ router.post(
 
 /* --- GET: login page --- */
 router.get("/login", (req, res, next) => {
-  res.render("auth/login");
+  res.render("auth/login", { navSwitch: false });
 });
 
 /* --- POST: login page --- */
@@ -88,16 +92,25 @@ router.post("/login", async (req, res, next) => {
 
   try {
     const isExistingUser = await User.findOne({ username });
+    const loggedInUserWorkouts = await Workout.find(
+      { userId: isExistingUser._id },
+      null,
+      { sort: { date: -1 } }
+    );
 
     if (isExistingUser) {
       if (bcryptjs.compareSync(password, isExistingUser.password)) {
         req.session.loggedInUser = isExistingUser;
-        res.redirect("/profile");
+        res.render("protected/profile", {
+          loggedInUser: isExistingUser,
+          loggedInUserWorkouts,
+          navSwitch: true,
+        });
       } else {
-        res.render("auth/login", { username });
+        res.render("auth/login", { username, navSwitch: false });
       }
     } else {
-      res.render("auth/login", { username });
+      res.render("auth/login", { username, navSwitch: false });
     }
   } catch (error) {
     console.log("Error from login post: ", error);
