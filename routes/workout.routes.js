@@ -14,6 +14,8 @@ const ExerciseLog = require("../models/ExerciseLog.model");
 const Workout = require("../models/Workout.model");
 const User = require("../models/User.model");
 
+const { calculateTotalWeight } = require("../utils/workout.helpers");
+
 // Route to search for exercises (API call)
 router.get("/search", async (req, res) => {
   const { search } = req.query;
@@ -41,14 +43,15 @@ router.get("/search", async (req, res) => {
 
 // Route to save an exercise log
 router.post("/exercise-log", isLoggedIn, async (req, res) => {
-  const { workoutId, exerciseId, sets, reps, weight } = req.body;
+  const { workoutId, exerciseId, sets } = req.body;
 
+  console.log("workoutId (before creating ExerciseLog):", workoutId);
+  console.log("exerciseId (before creating ExerciseLog):", exerciseId);
+  console.log("sets (before creating ExerciseLog):", sets);
   const exerciseLog = new ExerciseLog({
     workoutId,
     exerciseId,
     sets,
-    reps,
-    weight,
   });
 
   try {
@@ -59,6 +62,9 @@ router.post("/exercise-log", isLoggedIn, async (req, res) => {
     });
 
     res.sendStatus(200);
+    console.log("Received workoutId:", workoutId);
+    console.log("Received exerciseId:", exerciseId);
+    console.log("Received sets:", sets);
   } catch (error) {
     console.error("Error saving ExerciseLog:", error);
     res.sendStatus(500);
@@ -145,17 +151,40 @@ router.get("/exercise-log/:workoutId", async (req, res) => {
 // Route to finish a workout
 router.put("/finish-workout/:workoutId", isLoggedIn, async (req, res) => {
   const workoutId = req.params.workoutId;
+  const { workoutId: _workoutId, exercises } = req.body;
 
   try {
-    const updatedWorkout = await Workout.findByIdAndUpdate(
-      workoutId,
-      {
-        completed: true,
-      },
-      { new: true }
-    );
-    console.log("Updated Workout:", updatedWorkout);
-    res.sendStatus(200);
+    // Store the exercise logs in the database
+    const exerciseLogIds = [];
+    for (const exercise of exercises) {
+      const exerciseLog = new ExerciseLog({
+        workoutId,
+        exerciseId: exercise.exerciseId,
+        sets: exercise.sets,
+      });
+
+      const savedExerciseLog = await exerciseLog.save();
+      exerciseLogIds.push(savedExerciseLog._id);
+    }
+
+    // Retrieve the workout and exercise logs associated with the workoutId
+    const workout = await Workout.findById(workoutId);
+
+    if (!workout) {
+      return res.status(404).send("Workout not found");
+    }
+
+    // Update the workout with the exerciseLogIds, total weight, and set completed to true
+    workout.exerciseLogs = exerciseLogIds;
+    workout.totalWeight = calculateTotalWeight(exercises);
+    workout.completed = true;
+
+    const updatedWorkout = await workout.save();
+
+    console.log("Updated workout:", updatedWorkout);
+
+    // Send the updated workout as a response
+    res.status(200).send(updatedWorkout);
   } catch (error) {
     console.error("Error finishing workout:", error);
     res.sendStatus(500);

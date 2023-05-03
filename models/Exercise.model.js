@@ -51,7 +51,6 @@ const exerciseSchema = new Schema({
   },
   instructions: {
     type: String,
-    required: true,
   },
 });
 
