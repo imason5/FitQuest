@@ -1,9 +1,17 @@
 /* Universal settings */
 * {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  /*border: #00b7ff 1px solid;*/
 }
 
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+footer {
+  margin-top: auto;
+}
 /* General Settings */
 
 .btn-primary {
@@ -76,7 +84,6 @@ p {
 /* Footer settings */
 footer {
   padding: 0;
-  margin: 0;
   height: 75px;
   display: flex;
   justify-content: center;

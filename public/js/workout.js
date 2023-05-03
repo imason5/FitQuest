@@ -23,8 +23,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       const div = document.createElement("div");
+      div.classList.add("search-result");
       div.innerHTML = `
-        <span>${exercise.name}</span>
+        <span >${exercise.name}</span>
         <button class="add-exercise" data-id="${exercise._id}" data-type="${exercise.type}" data-difficulty="${exercise.difficulty}">+</button>
         <button class="more-info" data-equipment="${exercise.equipment}" data-instructions="${exercise.instructions}">&#8505;</button>
       `;
