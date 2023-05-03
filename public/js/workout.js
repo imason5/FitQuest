@@ -89,7 +89,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     currentWorkout.appendChild(card);
   }
   // Displays the workout summary modal. Creates a new div element with a textarea for notes and a button to save the notes. When the button is clicked, the workout is finished by calling the finishWorkout function. When the workout is finished, the modal content is updated with the workout summary.
-  function displayWorkoutSummaryModal() {
+  async function getExerciseNameById(exerciseId) {
+    // Your implementation of the getExerciseNameById function
+  }
+
+  async function displayWorkoutSummaryModal() {
     // Create the modal container
     const modal = document.createElement("div");
     modal.classList.add("modal");
@@ -119,15 +123,46 @@ document.addEventListener("DOMContentLoaded", async () => {
         workoutData.notes = notes; // Update the workoutData object with the notes
         const workout = await finishWorkout(workoutId, workoutData);
         if (workout) {
-          // Update the modal content with the workout summary
+          // Fetch the exercise names
+          const exerciseNamesPromises = workoutData.exercises.map((exercise) =>
+            getExerciseNameById(exercise.exerciseId)
+          );
+          const exerciseNames = await Promise.all(exerciseNamesPromises);
+
+          // Generate the exercise list HTML
+          let exerciseListHTML = "";
+          console.log("Exercises:", workoutData.exercises);
+          workoutData.exercises.forEach((exercise, index) => {
+            const exerciseName = exerciseNames[index];
+            exerciseListHTML += `
+            <h4>Exercise ${index + 1}: ${exerciseName}</h4>
+            <table>
+              <tr>
+                <th>Set</th>
+                <th>kg</th>
+                <th>reps</th>
+              </tr>`;
+
+            exercise.sets.forEach((set, setIndex) => {
+              exerciseListHTML += `
+              <tr>
+                <td>${setIndex + 1}</td>
+                <td>${set.weight}</td>
+                <td>${set.reps}</td>
+              </tr>`;
+            });
+
+            exerciseListHTML += `</table>`;
+          });
+
+          // Update the modal content with the workout summary and exercise list
           modalContent.innerHTML = `
-            <h3>Workout Summary</h3>
-            <p>Total Duration: ${workout.totalDuration} minutes</p>
-            <p>Total Weight: ${workout.totalWeight} lbs</p>
-            <p>Total Distance: ${workout.totalDistance} miles</p>
-            <p>Total Points: ${workout.totalPoints}</p>
-            <button class="close-modal">Close</button>
-          `;
+          <h3>Workout Summary</h3>
+          <p>Total Weight: ${workout.totalWeight} lbs</p>
+          <p>Total Points: ${workout.totalPoints}</p>
+          ${exerciseListHTML}
+          <button class="close-modal">Close</button>
+        `;
 
           // Add event listener to close the modal
           document
@@ -276,6 +311,23 @@ document.addEventListener("DOMContentLoaded", async () => {
       return workout;
     } else {
       console.error("Error finishing workout");
+      return null;
+    }
+  }
+
+  // Fetches an exercise by its ID and returns its name.
+  async function getExerciseNameById(exerciseId) {
+    try {
+      const response = await fetch(`/workout/get-exercise/${exerciseId}`);
+      if (response.ok) {
+        const exercise = await response.json();
+        return exercise.name;
+      } else {
+        console.error(`Error fetching exercise with ID ${exerciseId}`);
+        return null;
+      }
+    } catch (error) {
+      console.error(`Error fetching exercise with ID ${exerciseId}:`, error);
       return null;
     }
   }
