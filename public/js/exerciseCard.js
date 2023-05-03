@@ -8,7 +8,7 @@ document.getElementById("currentWorkout").addEventListener("click", (event) => {
   }
 });
 
-function displayCurrentWorkoutExercise(exerciseId, exerciseName, sets, reps) {
+function displayCurrentWorkoutExercise(exerciseId, exerciseName) {
   const currentWorkout = document.getElementById("currentWorkout");
   const template = document.getElementById("exercise-card-template");
 
@@ -24,7 +24,6 @@ function displayCurrentWorkoutExercise(exerciseId, exerciseName, sets, reps) {
 
   // Update the card content with sets, reps, and weight
   const content = card.querySelector(".card-content");
-  content.innerHTML = `<p>Sets: ${sets} | Reps: ${reps}</p>`;
 
   // Append the card to the current workout container
   currentWorkout.appendChild(card);

@@ -19,11 +19,7 @@
       </ul>
     </div>
   </div>
-  <button
-    class="btn btn-primary button-accent"
-    type="button"
-    data-trigger-dialog="pop-up"
-  >
+  <button class="btn-primary" type="button" data-trigger-dialog="pop-up">
     Edit
   </button>
   <p style="color: red">
@@ -34,32 +30,27 @@
 
     <div>
       <table class="eachworkout">
-        <thead>
-          <tr>
-            <th scope="col">Date</th>
-            <th scope="col">Name</th>
-            <th scope="col">Duration</th>
-            <th scope="col">Weight</th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
         <tbody>
-          <% loggedInUserWorkouts.forEach(currentWorkout => { %>
-          <tr>
-            <th scope="row"><%- currentWorkout.date.toDateString() %></th>
-            <td><%- currentWorkout.name %></td>
-            <td><%- currentWorkout.totalDuration %></td>
-            <td><%- currentWorkout.totalWeight %></td>
+          <% loggedInUserWorkouts.forEach(currentWorkout => { %> <% if
+          (currentWorkout.completed) { %>
+          <tr class="workout-card" data-workout-id="<%- currentWorkout._id %>">
+            <th scope="row">
+              <%- currentWorkout.date.toLocaleDateString('en-US', { weekday:
+              'long', year: 'numeric', month: 'long', day: 'numeric', ordinal:
+              'auto', hour: 'numeric', minute: 'numeric' }) %>
+            </th>
+
             <td>
               <form
                 method="POST"
                 action="/profile/workoutsDelete/<%- currentWorkout._id %>"
+                id="delete-workout-form-<%- currentWorkout._id %>"
               >
-                <button type="submit">Ｘ</button>
+                <button type="submit" class="delete-workout-button">Ｘ</button>
               </form>
             </td>
           </tr>
-          <% }) %>
+          <% } %> <% }) %>
         </tbody>
       </table>
     </div>
@@ -159,21 +150,19 @@
       </label>
       <br />
       <div class="button-group">
-        <button type="submit" class="btn btn-primary button-accent">
-          Submit
-        </button>
-        <button type="reset" class="btn btn-primary button-accent">
-          Reset
-        </button>
-        <button
-          value="cancel"
-          formmethod="dialog"
-          class="btn btn-primary button-accent"
-        >
+        <button type="submit" class="btn-primary">Submit</button>
+        <button type="reset" class="btn-primary">Reset</button>
+        <button value="cancel" formmethod="dialog" class="btn-primary">
           Cancel
         </button>
       </div>
     </form>
+  </dialog>
+
+  <dialog id="workout-modal">
+    <h3>Workout Details</h3>
+    <p>Workout information will go here...</p>
+    <button id="workout-modal-close">Close</button>
   </dialog>
 </div>
 <script src="/js/profile.js"></script>

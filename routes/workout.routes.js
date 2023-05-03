@@ -151,7 +151,7 @@ router.get("/exercise-log/:workoutId", async (req, res) => {
 // Route to finish a workout
 router.put("/finish-workout/:workoutId", isLoggedIn, async (req, res) => {
   const workoutId = req.params.workoutId;
-  const { workoutId: _workoutId, exercises } = req.body;
+  const { workoutId: _workoutId, exercises, notes } = req.body;
 
   try {
     // Store the exercise logs in the database
@@ -178,6 +178,7 @@ router.put("/finish-workout/:workoutId", isLoggedIn, async (req, res) => {
     workout.exerciseLogs = exerciseLogIds;
     workout.totalWeight = calculateTotalWeight(exercises);
     workout.completed = true;
+    workout.notes = notes;
 
     const updatedWorkout = await workout.save();
 
