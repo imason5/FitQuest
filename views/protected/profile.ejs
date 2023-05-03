@@ -36,7 +36,7 @@
       <table class="eachworkout">
         <tbody>
           <% loggedInUserWorkouts.forEach(currentWorkout => { %>
-          <tr class="workout-card">
+          <tr class="workout-card" data-workout-id="<%- currentWorkout._id %>">
             <th scope="row">
               <%- currentWorkout.date.toLocaleDateString('en-US', { weekday:
               'long', year: 'numeric', month: 'long', day: 'numeric', ordinal:
@@ -49,7 +49,7 @@
                 action="/profile/workoutsDelete/<%- currentWorkout._id %>"
                 id="delete-workout-form-<%- currentWorkout._id %>"
               >
-                <button onclick="confirmDelete(event)" type="submit">Ｘ</button>
+                <button type="submit" class="delete-workout-button">Ｘ</button>
               </form>
             </td>
           </tr>
@@ -168,6 +168,14 @@
         </button>
       </div>
     </form>
+  </dialog>
+
+  <dialog id="workout-modal">
+    <h3>Workout Details</h3>
+    <p>Workout information will go here...</p>
+    <button id="workout-modal-close" class="btn btn-primary button-accent">
+      Close
+    </button>
   </dialog>
 </div>
 <script src="/js/profile.js"></script>
