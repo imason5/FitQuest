@@ -20,7 +20,7 @@
         class="navbar bg-dark navbar-expand-lg bg-body-tertiary"
         data-bs-theme="dark"
       >
-        <div class="container-fluid">
+        <div class="container-fluid nav-bar-container">
           <a class="navbar-brand" href="/">
             <img src="/images/logo.png" alt="logo" width="30" height="24" />
           </a>
@@ -37,7 +37,10 @@
           >
             <span class="navbar-toggler-icon"></span>
           </button>
-          <div class="collapse navbar-collapse" id="navbarNav">
+          <div
+            class="collapse navbar-collapse nav-bar-link-container"
+            id="navbarNav"
+          >
             <ul class="navbar-nav">
               <% if ( typeof navSwitch !== "undefined" && navSwitch === true) {
               %>

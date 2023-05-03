@@ -4,6 +4,7 @@
 }
 
 body {
+  box-sizing: border-box;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -34,8 +35,34 @@ footer {
 .navbar {
   padding: 0;
   margin: 0;
+  width: 100vw;
   height: 75px;
-  background-color: black;
+}
+
+.navbar-brand {
+  margin-left: 10px;
+}
+
+/* hamburger menu settings */
+.navbar-toggler-icon {
+  filter: invert(100%);
+}
+
+.nav-bar-container {
+  --bs-gutter-x: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-around !important;
+}
+
+.nav-bar-link-container {
+  display: block;
+  text-align: center;
+}
+
+.nav-link {
+  background-color: #2b3035;
+  margin: auto;
 }
 
 label {
@@ -58,12 +85,12 @@ p {
   padding: 0;
   margin: 0;
   height: 80vh;
-  /*opacity: 0.8;*/
   background-image: url(https://images.unsplash.com/photo-1554284126-aa88f22d8b74?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1894&q=80);
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
   position: relative;
+  z-index: -1;
 }
 
 .hero-image-texts {
