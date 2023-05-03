@@ -38,6 +38,9 @@
         <p>Date: <%- eachworkout.date %></p>
         <p>Total Duration: <%- eachworkout.totalDuration %></p>
         <p>Total Weight: <%- eachworkout.totalWeight %></p>
+        <a class="btn btn-warning" href="/workout-delete/<%- eachworkout._id %>"
+          >X</a
+        >
       </div>
       <% }) %>
     </div>

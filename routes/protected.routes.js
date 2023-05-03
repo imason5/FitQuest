@@ -92,6 +92,16 @@ router.post(
   }
 );
 
+// /* --- POST: delete one workout on profile page --- */
+// router.post("/profile/:workoutId", async (req, res) => {
+//   try {
+//     await Workout.findByIdAndDelete(req.params.workoutId, { new: true });
+//     res.redirect("/profile");
+//   } catch (error) {
+//     console.log(error);
+//   }
+// });
+
 // /* --- GET: workout page --- */
 router.get("/workout", (req, res, next) => {
   res.render("protected/workout");
