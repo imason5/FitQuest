@@ -1,11 +1,11 @@
 dialog {
-  border: 3px solid #9da3a4;
-  border-radius: 0.8rem;
-  color: var(--color-text);
-  background: white;
-  margin: auto;
-  padding: 2rem;
-  width: 90vw;
+  background-color: white;
+  padding: 20px;
+  border-radius: 4px;
+  width: 80%;
+  max-width: 500px;
+  max-height: 80%;
+  overflow-y: auto;
   max-height: calc(100% - var(--space-md));
 }
 dialog::backdrop {
@@ -32,6 +32,7 @@ dialog::backdrop {
   border: 2px solid #ccc;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
   transition: all 0.2s ease-in-out;
+  cursor: pointer;
 }
 
 .workout-card:hover {
@@ -41,4 +42,36 @@ dialog::backdrop {
 
 .workout-card > * {
   padding: 1rem;
+}
+
+/* Buttons */
+.delete-workout-button {
+  background-color: #f5f5f5;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.delete-workout-button:hover {
+  background-color: #ddd;
+  border-color: #f00;
+  color: #f00;
+}
+
+#workout-modal-close {
+  background-color: #333;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#workout-modal-close:hover {
+  background-color: #fff;
+  color: #333;
+  box-shadow: 0 0 0 1px #333;
 }
