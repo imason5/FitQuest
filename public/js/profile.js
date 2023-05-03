@@ -90,11 +90,6 @@ function updateWorkoutModal(workout, exerciseLogs) {
   // Clear the modal content
   workoutModalContent.innerHTML = "";
 
-  // Create an element to display the workout's name
-  const workoutName = document.createElement("h4");
-  workoutName.textContent = `Workout: ${workout.name}`;
-  workoutModalContent.appendChild(workoutName);
-
   // Create an element to display the workout's date
   const workoutDate = document.createElement("p");
   const formattedDate = new Date(workout.date).toLocaleDateString();

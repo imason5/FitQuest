@@ -87,6 +87,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Append the card to the current workout container
     currentWorkout.appendChild(card);
+    return card;
   }
   // Displays the workout summary modal. Creates a new div element with a textarea for notes and a button to save the notes. When the button is clicked, the workout is finished by calling the finishWorkout function. When the workout is finished, the modal content is updated with the workout summary.
   async function getExerciseNameById(exerciseId) {
@@ -238,17 +239,17 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
 
       // Display the exercise in the current workout container
-      displayCurrentWorkoutExercise(exerciseId, exerciseName, exerciseType);
+      const newExerciseCard = displayCurrentWorkoutExercise(
+        exerciseId,
+        exerciseName,
+        exerciseType
+      );
+      newExerciseCard.addEventListener("input", (event) => {
+        // Attach an event listener to the last added card for changes in input fields
+        const currentWorkout = document.getElementById("currentWorkout");
+        const lastAddedCard = currentWorkout.lastElementChild;
 
-      // Attach an event listener to the last added card for changes in input fields
-      const currentWorkout = document.getElementById("currentWorkout");
-      const lastAddedCard = currentWorkout.lastElementChild;
-
-      lastAddedCard.addEventListener("input", (event) => {
-        if (exerciseType === "cardio") {
-          console.log("Cardio exercise selected");
-          // Add functionality for cardio exercises
-        } else {
+        lastAddedCard.addEventListener("input", (event) => {
           // Existing functionality for non-cardio exercises
           if (
             event.target.classList.contains("weight-input") ||
@@ -271,7 +272,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             // Update the sets in the workoutData object
             workoutData.exercises[workoutData.exercises.length - 1].sets = sets;
           }
-        }
+        });
       });
     }
   }
