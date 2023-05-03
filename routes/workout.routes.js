@@ -151,7 +151,7 @@ router.get("/exercise-log/:workoutId", async (req, res) => {
 // Route to finish a workout
 router.put("/finish-workout/:workoutId", isLoggedIn, async (req, res) => {
   const workoutId = req.params.workoutId;
-  const { workoutId: _workoutId, exercises } = req.body;
+  const { workoutId: _workoutId, exercises, notes } = req.body;
 
   try {
     // Store the exercise logs in the database
@@ -178,6 +178,7 @@ router.put("/finish-workout/:workoutId", isLoggedIn, async (req, res) => {
     workout.exerciseLogs = exerciseLogIds;
     workout.totalWeight = calculateTotalWeight(exercises);
     workout.completed = true;
+    workout.notes = notes;
 
     const updatedWorkout = await workout.save();
 
@@ -190,5 +191,28 @@ router.put("/finish-workout/:workoutId", isLoggedIn, async (req, res) => {
     res.sendStatus(500);
   }
 });
+
+// // Route to update workout notes
+// router.put("/workout/update-notes/:id", isLoggedIn, async (req, res) => {
+//   const workoutId = req.params.id;
+//   const { notes } = req.body;
+
+//   try {
+//     const workout = await Workout.findByIdAndUpdate(
+//       workoutId,
+//       { notes: notes },
+//       { new: true }
+//     );
+
+//     if (!workout) {
+//       return res.status(404).json({ message: "Workout not found" });
+//     }
+
+//     res.json({ message: "Workout notes updated", workout: workout });
+//   } catch (error) {
+//     console.error("Error updating workout notes:", error);
+//     res.status(500).json({ message: "Error updating workout notes" });
+//   }
+// });
 
 module.exports = router;

@@ -79,12 +79,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // Handle the Finish Workout logic
-  async function finishWorkout(workoutId) {
+  async function finishWorkout(workoutId, workoutData) {
     if (!workoutId) {
       console.error("Workout ID is not set. Unable to finish workout.");
       return;
     }
 
+    console.log("Sending workoutData to server:", workoutData);
     const response = await fetch(`/workout/finish-workout/${workoutId}`, {
       method: "PUT",
       headers: {
@@ -103,7 +104,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  function displayWorkoutSummaryModal(workout) {
+  function displayWorkoutSummaryModal() {
     // Create the modal container
     const modal = document.createElement("div");
     modal.classList.add("modal");
@@ -112,15 +113,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     const modalContent = document.createElement("div");
     modalContent.classList.add("modal-content");
 
-    // Add the workout summary to the modal content
+    // Add the input fields to the modal content
     modalContent.innerHTML = `
       <h3>Workout Summary</h3>
-      <p>Total Duration: ${workout.totalDuration} minutes</p>
-      <p>Total Weight: ${workout.totalWeight} kgs</p>
-      <p>Total Distance: ${workout.totalDistance} miles</p>
-      <p>Total Points: ${workout.totalPoints}</p>
-      <p>Notes: ${workout.notes}</p>
-      <button class="close-modal">Close</button>
+      <p>Notes:</p>
+      <textarea id="workout-notes"></textarea>
+      <button class="save-notes">Finished</button>
     `;
 
     // Add the modal content to the modal container
@@ -129,10 +127,31 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Add the modal to the body
     document.body.appendChild(modal);
 
-    // Add event listener to close the modal
-    document.querySelector(".close-modal").addEventListener("click", () => {
-      document.body.removeChild(modal);
-    });
+    document
+      .querySelector(".save-notes")
+      .addEventListener("click", async () => {
+        const notes = document.getElementById("workout-notes").value;
+        workoutData.notes = notes; // Update the workoutData object with the notes
+        const workout = await finishWorkout(workoutId, workoutData);
+        if (workout) {
+          // Update the modal content with the workout summary
+          modalContent.innerHTML = `
+            <h3>Workout Summary</h3>
+            <p>Total Duration: ${workout.totalDuration} minutes</p>
+            <p>Total Weight: ${workout.totalWeight} lbs</p>
+            <p>Total Distance: ${workout.totalDistance} miles</p>
+            <p>Total Points: ${workout.totalPoints}</p>
+            <button class="close-modal">Close</button>
+          `;
+
+          // Add event listener to close the modal
+          document
+            .querySelector(".close-modal")
+            .addEventListener("click", () => {
+              document.body.removeChild(modal);
+            });
+        }
+      });
   }
 
   // ********************
@@ -171,6 +190,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (response.ok) {
       const workout = await response.json();
       workoutId = workout._id;
+      workoutData.workoutId = workoutId;
       console.log("Workout ID:", workoutId);
       return true;
     } else {
@@ -236,6 +256,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
+  // async function updateWorkoutNotes(workoutId, notes) {
+  //   const response = await fetch(`/workout/update-notes/${workoutId}`, {
+  //     method: "PUT",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({ notes }),
+  //   });
+
+  //   if (response.ok) {
+  //     console.log("Workout notes updated");
+  //   } else {
+  //     console.error("Error updating workout notes");
+  //   }
+  // }
+
   // ********************
   // Event listeners
   // ********************
@@ -261,32 +297,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // Event listener for button to finish workout
+  // Event listener for button to finish workout and show workout summary
   document
     .getElementById("finish-workout")
     .addEventListener("click", async () => {
-      const workout = await finishWorkout(workoutId);
-      if (workout) {
-        displayWorkoutSummaryModal(workout);
-      }
+      // Display the Workout Summary Modal and pass the workoutId and workoutData
+      displayWorkoutSummaryModal(workoutId, workoutData);
     });
-
   // ********************
   // Initialization
   // ********************
 
-  const now = new Date();
-  const options = {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    ordinal: "auto",
-    hour: "numeric",
-    minute: "numeric",
-  };
-  const formattedDate = now.toLocaleDateString("en-US", options);
-  const workoutName = `${formattedDate}`;
+  const workoutName = "My Workout";
 
   (async () => {
     await createNewWorkout(workoutName);
