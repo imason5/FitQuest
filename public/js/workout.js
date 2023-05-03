@@ -79,10 +79,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     const title = card.querySelector(".card-title");
     title.textContent = `${exerciseName}`;
 
+    // Add the remove button to the card
+    const removeButton = document.createElement("button");
+    removeButton.classList.add("remove-exercise");
+    removeButton.textContent = "Remove";
+    card.querySelector(".card-actions").appendChild(removeButton);
+
     // Append the card to the current workout container
     currentWorkout.appendChild(card);
   }
-
   // Displays the workout summary modal. Creates a new div element with a textarea for notes and a button to save the notes. When the button is clicked, the workout is finished by calling the finishWorkout function. When the workout is finished, the modal content is updated with the workout summary.
   function displayWorkoutSummaryModal() {
     // Create the modal container
@@ -236,6 +241,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
+  async function handleRemoveExercise(e) {
+    // Find the card and its index in the current workout
+    const currentWorkout = document.getElementById("currentWorkout");
+    const card = e.target.closest(".card");
+    const cardIndex = Array.from(currentWorkout.children).indexOf(card);
+
+    // Remove the exercise from the workoutData object
+    workoutData.exercises.splice(cardIndex, 1);
+
+    // Remove the card from the DOM
+    currentWorkout.removeChild(card);
+  }
+
   // Sends a PUT request to the API to finish the workout. Returns the finished workout.
   async function finishWorkout(workoutId, workoutData) {
     if (!workoutId) {
@@ -284,6 +302,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       const equipment = event.target.dataset.equipment;
       const instructions = event.target.dataset.instructions;
       displayMoreInfoModal(equipment, instructions);
+    }
+  });
+
+  // Event listener for button to remove exercise from workout
+  document.addEventListener("click", async (e) => {
+    if (e.target.classList.contains("remove-exercise")) {
+      await handleRemoveExercise(e);
     }
   });
 
