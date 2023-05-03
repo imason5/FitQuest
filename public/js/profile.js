@@ -16,3 +16,15 @@ const cancelBtn = document.querySelector("#cancel");
 cancelBtn.addEventListener("click", () => {
   dialog.close;
 });
+
+function confirmDelete(event, workoutDate) {
+  event.preventDefault();
+  const form = event.target.form;
+  const workoutId = form.action.split("/").pop();
+  const confirmDelete = confirm(
+    `Are you sure you want to delete this workout?`
+  );
+  if (confirmDelete) {
+    document.getElementById(`delete-workout-form-${workoutId}`).submit();
+  }
+}

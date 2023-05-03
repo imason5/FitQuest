@@ -47,8 +47,9 @@
               <form
                 method="POST"
                 action="/profile/workoutsDelete/<%- currentWorkout._id %>"
+                id="delete-workout-form-<%- currentWorkout._id %>"
               >
-                <button type="submit">Ｘ</button>
+                <button onclick="confirmDelete(event)" type="submit">Ｘ</button>
               </form>
             </td>
           </tr>
