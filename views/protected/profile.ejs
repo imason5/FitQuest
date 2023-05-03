@@ -31,15 +31,37 @@
   </p>
   <div id="personalWorkouts">
     <h3>Personal Workouts</h3>
+
     <div>
-      <% loggedInUserWorkouts.forEach(eachworkout => { %>
-      <div class="eachworkout">
-        <h5>Name: <%- eachworkout.name %></h5>
-        <p>Date: <%- eachworkout.date %></p>
-        <p>Total Duration: <%- eachworkout.totalDuration %></p>
-        <p>Total Weight: <%- eachworkout.totalWeight %></p>
-      </div>
-      <% }) %>
+      <table class="eachworkout">
+        <thead>
+          <tr>
+            <th scope="col">Date</th>
+            <th scope="col">Name</th>
+            <th scope="col">Duration</th>
+            <th scope="col">Weight</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% loggedInUserWorkouts.forEach(currentWorkout => { %>
+          <tr>
+            <th scope="row"><%- currentWorkout.date.toDateString() %></th>
+            <td><%- currentWorkout.name %></td>
+            <td><%- currentWorkout.totalDuration %></td>
+            <td><%- currentWorkout.totalWeight %></td>
+            <td>
+              <form
+                method="POST"
+                action="/profile/workoutsDelete/<%- currentWorkout._id %>"
+              >
+                <button type="submit">Ｘ</button>
+              </form>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
     </div>
   </div>
   <br />
@@ -154,3 +176,4 @@
     </form>
   </dialog>
 </div>
+<script src="/js/profile.js"></script>

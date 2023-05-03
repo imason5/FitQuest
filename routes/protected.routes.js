@@ -26,7 +26,11 @@ router.get("/profile", isLoggedIn, async (req, res, next) => {
   ); // return an array
 
   console.log("loggedInUserWorkouts: ", loggedInUserWorkouts);
-  res.render("protected/profile", { loggedInUser, loggedInUserWorkouts });
+  res.render("protected/profile", {
+    isLoggedIn,
+    loggedInUser,
+    loggedInUserWorkouts,
+  });
 });
 
 /* --- POST: profile page --- */
@@ -74,7 +78,7 @@ router.post(
                 console.log("First loggedInUser", loggedInUser);
               })*/
               .then((loggedInUser) => {
-                console.log("Second loggedInUser", loggedInUser);
+                // console.log("Second loggedInUser", loggedInUser);
                 res.render("protected/profile", { loggedInUser });
               })
               .catch((error) => {
@@ -92,9 +96,23 @@ router.post(
   }
 );
 
+/* --- POST: delete one workout on profile page --- */
+router.post(
+  "/profile/workoutsDelete/:workoutId",
+  isLoggedIn,
+  async (req, res) => {
+    try {
+      await Workout.findByIdAndDelete(req.params.workoutId);
+      res.redirect("/profile");
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
+
 // /* --- GET: workout page --- */
-router.get("/workout", (req, res, next) => {
-  res.render("protected/workout");
+router.get("/workout", isLoggedIn, (req, res, next) => {
+  res.render("protected/workout", { isLoggedIn });
 });
 
 module.exports = router;
