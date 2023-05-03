@@ -1,14 +1,17 @@
 const express = require("express");
 const router = express.Router();
+
+/* --- Import models --- */
 const User = require("../models/User.model");
 const Workout = require("../models/Workout.model");
 
-const bcryptjs = require("bcryptjs");
+/* --- Import middlewares --- */
 const { validateSignupInput } = require("../middleware/inputValidation");
 const { isLoggedIn, isLoggedOut } = require("../middleware/route-guard");
-
 const uploader = require("../middleware/cloudinary.config.js");
 
+/* --- Import bcryptjs --- */
+const bcryptjs = require("bcryptjs");
 const roundOfSalt = 13;
 const pwdRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/;
 
