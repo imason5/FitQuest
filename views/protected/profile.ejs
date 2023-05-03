@@ -31,7 +31,8 @@
     <div>
       <table class="eachworkout">
         <tbody>
-          <% loggedInUserWorkouts.forEach(currentWorkout => { %>
+          <% loggedInUserWorkouts.forEach(currentWorkout => { %> <% if
+          (currentWorkout.completed) { %>
           <tr class="workout-card" data-workout-id="<%- currentWorkout._id %>">
             <th scope="row">
               <%- currentWorkout.date.toLocaleDateString('en-US', { weekday:
@@ -49,7 +50,7 @@
               </form>
             </td>
           </tr>
-          <% }) %>
+          <% } %> <% }) %>
         </tbody>
       </table>
     </div>
