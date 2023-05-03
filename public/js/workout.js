@@ -121,7 +121,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       .querySelector(".save-notes")
       .addEventListener("click", async () => {
         const notes = document.getElementById("workout-notes").value;
-        workoutData.notes = notes; // Update the workoutData object with the notes
+        workoutData.notes = notes;
         const workout = await finishWorkout(workoutId, workoutData);
         if (workout) {
           // Fetch the exercise names
@@ -133,8 +133,10 @@ document.addEventListener("DOMContentLoaded", async () => {
           // Generate the exercise list HTML
           let exerciseListHTML = "";
           console.log("Exercises:", workoutData.exercises);
+          let totalWorkoutPoints = 0;
           workoutData.exercises.forEach((exercise, index) => {
             const exerciseName = exerciseNames[index];
+
             exerciseListHTML += `
             <h4>Exercise ${index + 1}: ${exerciseName}</h4>
             <table>
@@ -142,15 +144,19 @@ document.addEventListener("DOMContentLoaded", async () => {
                 <th>Set</th>
                 <th>kg</th>
                 <th>reps</th>
+                <th>Points</th>
               </tr>`;
 
             exercise.sets.forEach((set, setIndex) => {
+              const setPoints = set.weight * set.reps * set.pointsPerKg;
+              totalWorkoutPoints += setPoints;
               exerciseListHTML += `
-              <tr>
-                <td>${setIndex + 1}</td>
-                <td>${set.weight}</td>
-                <td>${set.reps}</td>
-              </tr>`;
+                  <tr>
+                    <td>${setIndex + 1}</td>
+                    <td>${set.weight}</td>
+                    <td>${set.reps}</td>
+                    <td>${setPoints}</td>
+                  </tr>`;
             });
 
             exerciseListHTML += `</table>`;
@@ -159,8 +165,8 @@ document.addEventListener("DOMContentLoaded", async () => {
           // Update the modal content with the workout summary and exercise list
           modalContent.innerHTML = `
           <h3>Workout Summary</h3>
-          <p>Total Weight: ${workout.totalWeight} lbs</p>
-          <p>Total Points: ${workout.totalPoints}</p>
+          <p>Total Weight: ${workout.totalWeight} kg</p>
+          <p>Total Points: ${totalWorkoutPoints}</p>
           ${exerciseListHTML}
           <button class="close-modal">Close</button>
         `;
@@ -227,6 +233,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const exerciseName = e.target.previousElementSibling.textContent;
       const exerciseType = e.target.dataset.type; // Get the exercise type from the data-type attribute
       const exerciseDifficulty = e.target.dataset.difficulty; // Get the exercise difficulty from the data-difficulty attribute
+      const baseScore = getBaseScore(exerciseDifficulty);
       console.log("exerciseType:", exerciseType);
       console.log("exerciseDifficulty:", exerciseDifficulty);
 
@@ -236,6 +243,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         sets: [],
         type: exerciseType, // Add the exercise type to the workoutData object
         difficulty: exerciseDifficulty, // Add the exercise difficulty to the workoutData object
+        baseScore: baseScore,
+        points: 0,
       });
 
       // Display the exercise in the current workout container
@@ -245,34 +254,34 @@ document.addEventListener("DOMContentLoaded", async () => {
         exerciseType
       );
       newExerciseCard.addEventListener("input", (event) => {
-        // Attach an event listener to the last added card for changes in input fields
-        const currentWorkout = document.getElementById("currentWorkout");
-        const lastAddedCard = currentWorkout.lastElementChild;
+        if (
+          event.target.classList.contains("weight-input") ||
+          event.target.classList.contains("reps-input")
+        ) {
+          // Get the updated sets
+          const setRows = newExerciseCard.querySelectorAll(".set-row");
+          const sets = [];
 
-        lastAddedCard.addEventListener("input", (event) => {
-          // Existing functionality for non-cardio exercises
-          if (
-            event.target.classList.contains("weight-input") ||
-            event.target.classList.contains("reps-input")
-          ) {
-            // Get the updated sets
-            const setRows = lastAddedCard.querySelectorAll(".set-row");
-            const sets = [];
+          for (const setRow of setRows) {
+            const weightInput = setRow.querySelector(".weight-input");
+            const repsInput = setRow.querySelector(".reps-input");
 
-            for (const setRow of setRows) {
-              const weightInput = setRow.querySelector(".weight-input");
-              const repsInput = setRow.querySelector(".reps-input");
-
-              sets.push({
-                weight: parseFloat(weightInput.value) || 0,
-                reps: parseInt(repsInput.value) || 0,
-              });
-            }
-
-            // Update the sets in the workoutData object
-            workoutData.exercises[workoutData.exercises.length - 1].sets = sets;
+            sets.push({
+              weight: parseFloat(weightInput.value) || 0,
+              reps: parseInt(repsInput.value) || 0,
+              pointsPerKg: baseScore,
+            });
           }
-        });
+
+          // Find the card index in the current workout
+          const currentWorkout = document.getElementById("currentWorkout");
+          const cardIndex = Array.from(currentWorkout.children).indexOf(
+            newExerciseCard
+          );
+
+          // Update the sets in the workoutData object
+          workoutData.exercises[cardIndex].sets = sets;
+        }
       });
     }
   }
@@ -297,6 +306,21 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
+    // Calculate the total points for the workout
+    let totalPoints = 0;
+    for (const exercise of workoutData.exercises) {
+      let exercisePoints = 0;
+      const baseScore = exercise.baseScore;
+
+      exercise.sets.forEach((set) => {
+        exercisePoints += set.weight * set.reps * set.pointsPerKg;
+      });
+
+      exercise.points = exercisePoints;
+      totalPoints += exercise.points;
+    }
+    workoutData.totalPoints = totalPoints;
+
     console.log("Sending workoutData to server:", workoutData);
     const response = await fetch(`/workout/finish-workout/${workoutId}`, {
       method: "PUT",
@@ -313,6 +337,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     } else {
       console.error("Error finishing workout");
       return null;
+    }
+  }
+
+  function getBaseScore(difficulty) {
+    switch (difficulty) {
+      case "beginner":
+        return 0.1;
+      case "intermediate":
+        return 0.25;
+      case "expert":
+        return 0.5;
+      default:
+        return 0.1;
     }
   }
 

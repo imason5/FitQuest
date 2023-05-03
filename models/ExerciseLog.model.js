@@ -9,6 +9,10 @@ const setSchema = new Schema({
     type: Number,
     default: 0,
   },
+  pointsPerKg: {
+    type: Number,
+    default: 0,
+  },
 });
 
 const exerciseLogSchema = new Schema({
@@ -23,20 +27,11 @@ const exerciseLogSchema = new Schema({
     // required: true,
   },
   sets: [setSchema],
-  points: {
-    type: Number,
-    default: 0,
-  },
-
   distance: {
     type: Number,
     default: 0,
   },
   duration: {
-    type: Number,
-    default: 0,
-  },
-  points: {
     type: Number,
     default: 0,
   },

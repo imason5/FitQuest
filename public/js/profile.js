@@ -98,8 +98,13 @@ function updateWorkoutModal(workout, exerciseLogs) {
 
   // Create an element to display the workout's total weight
   const workoutTotalWeight = document.createElement("p");
-  workoutTotalWeight.textContent = `Total weight: ${workout.totalWeight} lbs`;
+  workoutTotalWeight.textContent = `Total weight lifted: ${workout.totalWeight}kg`;
   workoutModalContent.appendChild(workoutTotalWeight);
+
+  // Create an element to display the workout's total points
+  const workoutTotalPoints = document.createElement("p");
+  workoutTotalPoints.textContent = `Total points earned: ${workout.totalPoints}`;
+  workoutModalContent.appendChild(workoutTotalPoints);
 
   // Create an element to display the workout's notes
   const workoutNotes = document.createElement("p");
@@ -121,9 +126,10 @@ function updateWorkoutModal(workout, exerciseLogs) {
     const setsList = document.createElement("ul");
     log.sets.forEach((set, index) => {
       const setItem = document.createElement("li");
+      const setPoints = set.reps * set.weight * set.pointsPerKg;
       setItem.textContent = `Set ${index + 1}: ${set.reps} reps, ${
         set.weight
-      } lbs`;
+      }kg, ${setPoints.toFixed(2)} points`;
       setsList.appendChild(setItem);
     });
 
