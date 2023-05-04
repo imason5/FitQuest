@@ -193,7 +193,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
           // Generate the exercise list HTML
           let exerciseListHTML = "";
-          console.log("Exercises:", workoutData.exercises);
+
           let totalWorkoutPoints = 0;
           workoutData.exercises.forEach((exercise, index) => {
             const exerciseName = exerciseNames[index];
@@ -294,7 +294,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     workoutData.totalPoints = totalPoints;
 
-    console.log("Sending workoutData to server:", workoutData);
     const response = await fetch(`/workout/finish-workout/${workoutId}`, {
       method: "PUT",
       headers: {
@@ -304,7 +303,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     if (response.ok) {
-      console.log("Workout finished");
       const workout = await response.json();
       return workout;
     } else {
@@ -346,7 +344,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const workout = await response.json();
       workoutId = workout._id;
       workoutData.workoutId = workoutId;
-      console.log("Workout ID:", workoutId);
+
       return true;
     } else {
       console.error("Error creating workout");
