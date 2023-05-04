@@ -1,30 +1,29 @@
-<section class="container">
-  <h1>Login Page</h1>
-  <form action="/login" method="post">
-    <label class="alignedInput" for="username"
-      >Username:
+<section id="login" class="container">
+  <h1>Welcome back!</h1>
+  <h4>Please log in with your account details.</h4>
+  <form class="login-form" action="/login" method="post">
+    <label for="username">
       <input
         type="text"
-        name="username"
+        name="Username:"
         placeholder="username"
-        class="form-control"
+        class="form-control login-input"
         required
       />
     </label>
-    <label class="alignedInput" for="password"
-      >Password:
+    <label for="password">
       <input
         type="password"
         name="password"
-        placeholder="********"
-        class="form-control"
+        placeholder="Password:"
+        class="form-control login-input"
         required
       />
     </label>
     <br />
     <button type="submit" class="btn-primary">Login</button>
   </form>
-  <p style="color: red">
+  <p class="warning-texts">
     <%- typeof errorMessage !== 'undefined' ? errorMessage : "" %>
   </p>
 </section>

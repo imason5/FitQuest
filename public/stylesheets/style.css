@@ -51,6 +51,10 @@ footer {
   width: 100%;
 }
 
+.warning-texts {
+  color: darkred;
+}
+
 /* hamburger menu settings */
 .navbar-toggler-icon {
   filter: invert(100%);
