@@ -112,12 +112,35 @@
           class="form-control"
         />
       </label>
+      <% if (loggedInUser.gender === "male") { %>
+      <label for="gender">
+        <p>Gender:</p>
+        <input type="radio" name="gender" value="male" checked />Male
+        <input type="radio" name="gender" value="female" />Female
+        <input type="radio" name="gender" value="other" />Other
+      </label>
+      <% } else if (loggedInUser.gender === "female") { %>
+      <label for="gender">
+        <p>Gender:</p>
+        <input type="radio" name="gender" value="male" />Male
+        <input type="radio" name="gender" value="female" checked />Female
+        <input type="radio" name="gender" value="other" />Other
+      </label>
+      <% } else if (loggedInUser.gender === "other") { %>
+      <label for="gender">
+        <p>Gender:</p>
+        <input type="radio" name="gender" value="male" />Male
+        <input type="radio" name="gender" value="female" />Female
+        <input type="radio" name="gender" value="other" checked />Other
+      </label>
+      <% } else{ %>
       <label for="gender">
         <p>Gender:</p>
         <input type="radio" name="gender" value="male" />Male
         <input type="radio" name="gender" value="female" />Female
         <input type="radio" name="gender" value="other" />Other
       </label>
+      <% }%>
       <label for="weight">
         <p>Weight:</p>
         <input
