@@ -180,6 +180,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     document
       .querySelector(".save-notes")
       .addEventListener("click", async () => {
+        triggerConfetti();
         const notes = document.getElementById("workout-notes").value;
         workoutData.notes = notes; // Add the notes to the workout data
         const workout = await finishWorkout(workoutId, workoutData);
@@ -231,6 +232,8 @@ document.addEventListener("DOMContentLoaded", async () => {
           <p class="exercise-summary-bold">Total Weight: ${workout.totalWeight}kg</p>
           <p class="exercise-summary-bold">Total Points: ${totalWorkoutPoints}</p>
           ${exerciseListHTML}
+          <p class="exercise-summary-bold">Notes:</p>
+          ${notes}
           <button class="close-modal">Close</button>
         `;
 
@@ -368,6 +371,41 @@ document.addEventListener("DOMContentLoaded", async () => {
         return 0.1;
     }
   }
+
+  function triggerConfetti() {
+    const defaults = {
+      spread: 360,
+      ticks: 150, // Effect duration
+      gravity: 0,
+      decay: 0.94,
+      startVelocity: 20, // Speed of confetti
+      shapes: ["star"],
+      colors: ["FFE400", "FFBD00", "E89400", "FFCA6C", "FDFFB8"],
+    };
+
+    const shoot = () => {
+      confetti({
+        ...defaults,
+        particleCount: 60,
+        scalar: 1.2,
+        shapes: ["star"],
+      });
+
+      confetti({
+        ...defaults,
+        particleCount: 10,
+        scalar: 0.75,
+        shapes: ["circle"],
+      });
+    };
+
+    setTimeout(shoot, 0);
+    setTimeout(shoot, 100);
+    setTimeout(shoot, 200);
+    setTimeout(shoot, 800);
+    setTimeout(shoot, 1000);
+  }
+
   // ********************
   // Event handlers
   // ********************
