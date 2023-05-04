@@ -124,10 +124,18 @@ router.post("/login", async (req, res, next) => {
           navSwitch: true,
         });
       } else {
-        res.render("auth/login", { username, navSwitch: false });
+        res.render("auth/login", {
+          username,
+          errorMessage: "Password is not correct.",
+          navSwitch: false,
+        });
       }
     } else {
-      res.render("auth/login", { username, navSwitch: false });
+      res.render("auth/login", {
+        username,
+        errorMessage: "Username is not existed",
+        navSwitch: false,
+      });
     }
   } catch (error) {
     console.log("Error from login post: ", error);
