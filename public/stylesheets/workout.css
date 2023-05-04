@@ -44,6 +44,7 @@
 .card {
   margin-bottom: 0.5rem;
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  position: relative;
 }
 
 .card-title {
@@ -119,4 +120,25 @@
   background-color: #fff;
   color: #333;
   box-shadow: 0 0 0 1px #333;
+}
+
+.add-set-button {
+  padding: 10px 10px;
+}
+
+.remove-exercise {
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+}
+
+.remove-exercise:hover {
+  background-color: #ddd;
+  border-color: #f00;
+  color: #f00;
 }
