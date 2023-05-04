@@ -2,7 +2,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ********************
   // Constants
   // ********************
-  const WORKOUT_NAME = "My Workout";
+
+  const WORKOUT_NAME = "My Workout"; // TODO: Change this to be dynamic, although it doesn't get used anywhere yet.
 
   // ********************
   // GLOBAL VARIABLES
@@ -132,11 +133,14 @@ document.addEventListener("DOMContentLoaded", async () => {
             const weightInput = setRow.querySelector(".weight-input");
             const repsInput = setRow.querySelector(".reps-input");
 
+            const weight = parseFloat(weightInput.value) || 0;
+            const reps = parseInt(repsInput.value) || 0;
+
+            const pointsPerKg = getBaseScore(exerciseDifficulty);
             sets.push({
-              // Update the sets array with the new weight, reps and pointsPerKg values.
-              weight: parseFloat(weightInput.value) || 0,
-              reps: parseInt(repsInput.value) || 0,
-              pointsPerKg: baseScore,
+              weight: weight,
+              reps: reps,
+              pointsPerKg: pointsPerKg,
             });
           }
 
@@ -232,6 +236,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             .querySelector(".close-modal")
             .addEventListener("click", () => {
               document.body.removeChild(modal);
+              window.location.href = "/profile"; // Redirect to profile page
             });
         }
       });
@@ -246,30 +251,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const response = await fetch(url);
     const data = await response.json();
     return data;
-  }
-
-  // Sends a POST request to create a new workout with the given name and sets workoutId to the created workout's ID.
-  async function createNewWorkout(name) {
-    const response = await fetch("/workout/create-workout", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        workoutName: name,
-      }),
-    });
-
-    if (response.ok) {
-      const workout = await response.json();
-      workoutId = workout._id;
-      workoutData.workoutId = workoutId;
-      console.log("Workout ID:", workoutId);
-      return true;
-    } else {
-      console.error("Error creating workout");
-      return false;
-    }
   }
 
   // Remove the exercise from the workoutData object and the DOM.
@@ -298,7 +279,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     let totalPoints = 0;
     for (const exercise of workoutData.exercises) {
       let exercisePoints = 0;
-      const baseScore = exercise.baseScore;
 
       exercise.sets.forEach((set) => {
         exercisePoints += set.weight * set.reps * set.pointsPerKg;
@@ -345,12 +325,35 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // --------------------
+  // Sends a POST request to create a new workout with the given name and sets workoutId to the created workout's ID.
+  async function createNewWorkout(name) {
+    const response = await fetch("/workout/create-workout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        workoutName: name,
+      }),
+    });
+
+    if (response.ok) {
+      const workout = await response.json();
+      workoutId = workout._id;
+      workoutData.workoutId = workoutId;
+      console.log("Workout ID:", workoutId);
+      return true;
+    } else {
+      console.error("Error creating workout");
+      return false;
+    }
+  }
+  // ********************
   // HELPER FUNCTIONS
-  // --------------------
+  // ********************
 
   // Gets the base score for an exercise based on its difficulty
-  function getBaseScore(difficulty) {
+  function getBaseScore(difficulty, minPoints = 0) {
     switch (difficulty) {
       case "beginner":
         return 0.1;
@@ -359,13 +362,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       case "expert":
         return 0.5;
       default:
+        console.error(`Invalid difficulty: ${difficulty}`);
         return 0.1;
     }
   }
-
   // ********************
   // Event handlers
   // ********************
+
   async function onSearchFormSubmit(e) {
     e.preventDefault();
     const search = document.getElementById("search").value;
@@ -417,6 +421,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ********************
   // Initialization
   // ********************
+
   (async () => {
     await createNewWorkout(WORKOUT_NAME);
   })();
