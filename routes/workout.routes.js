@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const fetch = require("node-fetch");
-const path = require("path");
 
 const { isLoggedIn } = require("../middleware/route-guard");
 const { storeExercise } = require("../utils/exerciseHelpers");
