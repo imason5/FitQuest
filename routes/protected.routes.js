@@ -55,7 +55,19 @@ router.post("/profile", uploader.single("imageUrl"), async (req, res, next) => {
           currentUser.height = req.body.height;
           currentUser.bio = req.body.bio;
           currentUser.profilePic = req.file.path;
+          
+          // If user is updating profile picture, then profilePic url equals to req.file.path.
+            if (req.file) {
+              await User.findByIdAndUpdate(
+                newUser._id,
+                {
+                  profilePic: req.file.path,
+                },
+                { new: true }
+              );
+            }
 
+            // If user is updating password
           if (password && pwdRegex.test(password)) {
             const salt = bcryptjs.genSaltSync(roundOfSalt);
             currentUser.password = bcryptjs.hashSync(password, salt);
