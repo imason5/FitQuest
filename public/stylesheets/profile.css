@@ -72,6 +72,8 @@ dialog {
   transform: translate(-50%, -50%);
   width: 90%;
   z-index: 1000;
+  max-height: 60vh;
+  overflow-y: scroll;
 }
 
 #pop-up label {
