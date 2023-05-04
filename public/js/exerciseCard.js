@@ -1,34 +1,16 @@
-document.getElementById("currentWorkout").addEventListener("click", (event) => {
-  if (event.target.matches(".add-set-button")) {
-    const addButton = event.target;
-    const setsRow = addButton.parentElement.querySelector(".sets-row");
-    const newSetNumber = setsRow.children.length + 1;
-    const setRow = createSetRow(newSetNumber);
-    setsRow.appendChild(setRow);
-  }
-});
-
-function displayCurrentWorkoutExercise(exerciseId, exerciseName) {
-  const currentWorkout = document.getElementById("currentWorkout");
-  const template = document.getElementById("exercise-card-template");
-
-  // Create a copy of the template
-  const card = template.content.cloneNode(true).querySelector(".card");
-
-  // Update the card title with exercise name
-  const title = card.querySelector(".card-title");
-  title.textContent = `${exerciseName}`;
-
-  // Set the data-exercise-id attribute
-  card.setAttribute("data-exercise-id", exerciseId);
-
-  // Update the card content with sets, reps, and weight
-  const content = card.querySelector(".card-content");
-
-  // Append the card to the current workout container
-  currentWorkout.appendChild(card);
+// Create input elements with specific styles and attributes
+function createInput(colClass, inputClass, type, placeholder) {
+  const col = document.createElement("div");
+  col.classList.add("col", colClass);
+  const input = document.createElement("input");
+  input.classList.add("form-control", inputClass);
+  input.setAttribute("type", type);
+  input.setAttribute("placeholder", placeholder);
+  col.appendChild(input);
+  return [col, input];
 }
 
+// Creates a new row element for a set of an exercise in the workout
 function createSetRow(setNumber) {
   const setRow = document.createElement("div");
   setRow.classList.add("row", "mb-3", "set-row");
@@ -38,23 +20,20 @@ function createSetRow(setNumber) {
   setNumberCol.textContent = setNumber;
   setRow.appendChild(setNumberCol);
 
-  const weightInputCol = document.createElement("div");
-  weightInputCol.classList.add("col");
-  const weightInput = document.createElement("input");
-  weightInput.classList.add("form-control", "weight-input");
-  weightInput.setAttribute("type", "number");
-  weightInput.setAttribute("step", "0.5");
-  weightInput.setAttribute("placeholder", "kg");
-  weightInputCol.appendChild(weightInput);
+  const [weightInputCol] = createInput(
+    "weight-input-col",
+    "weight-input",
+    "number",
+    "kg"
+  );
   setRow.appendChild(weightInputCol);
 
-  const repsInputCol = document.createElement("div");
-  repsInputCol.classList.add("col");
-  const repsInput = document.createElement("input");
-  repsInput.classList.add("form-control", "reps-input");
-  repsInput.setAttribute("type", "number");
-  repsInput.setAttribute("placeholder", "reps");
-  repsInputCol.appendChild(repsInput);
+  const [repsInputCol] = createInput(
+    "reps-input-col",
+    "reps-input",
+    "number",
+    "reps"
+  );
   setRow.appendChild(repsInputCol);
 
   const addButtonCol = document.createElement("div");
@@ -72,3 +51,16 @@ function createSetRow(setNumber) {
 
   return setRow;
 }
+
+// Adds the set to the exercise card
+function addSet(event) {
+  if (event.target.matches(".add-set-button")) {
+    const addButton = event.target;
+    const setsRow = addButton.parentElement.querySelector(".sets-row");
+    const newSetNumber = setsRow.children.length + 1;
+    const setRow = createSetRow(newSetNumber);
+    setsRow.appendChild(setRow);
+  }
+}
+
+document.getElementById("currentWorkout").addEventListener("click", addSet);

@@ -1,7 +1,6 @@
 // ℹ️ Gets access to environment variables/settings
 // https://www.npmjs.com/package/dotenv
 require("dotenv").config();
-console.log("Loaded .env file:", process.env.API_KEY);
 // ℹ️ Connects to the database
 require("./db");
 

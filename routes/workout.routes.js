@@ -1,23 +1,18 @@
 const express = require("express");
 const router = express.Router();
 const fetch = require("node-fetch");
-const path = require("path");
 
 const { isLoggedIn } = require("../middleware/route-guard");
-const { storeExercise } = require(path.join(
-  __dirname,
-  "../public/js/exerciseHelpers"
-));
+const { storeExercise } = require("../utils/exerciseHelpers");
+const {
+  calculateTotalWeight,
+  calculateTotalPoints,
+} = require("../utils/workoutHelpers");
 
 const Exercise = require("../models/Exercise.model");
 const ExerciseLog = require("../models/ExerciseLog.model");
 const Workout = require("../models/Workout.model");
 const User = require("../models/User.model");
-
-const {
-  calculateTotalWeight,
-  calculateTotalPoints,
-} = require("../utils/workout.helpers");
 
 // Route to search for exercises (API call)
 router.get("/search", async (req, res) => {

@@ -1,5 +1,4 @@
-const path = require("path");
-const Exercise = require(path.join(__dirname, "../../models/Exercise.model"));
+const Exercise = require("../models/Exercise.model");
 
 async function storeExercise(apiData, searchTerm) {
   // Transform the API data into a format that the database can understand

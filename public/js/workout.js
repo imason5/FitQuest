@@ -1,17 +1,26 @@
 document.addEventListener("DOMContentLoaded", async () => {
   // ********************
-  // DOM manipulation functions
+  // Constants
+  // ********************
+
+  const WORKOUT_NAME = "My Workout"; // TODO: Change this to be dynamic, although it doesn't get used anywhere yet.
+
+  // ********************
+  // GLOBAL VARIABLES
   // ********************
 
   let workoutId;
 
-  // Object to store the current workout data
   let workoutData = {
     workoutId: null,
     exercises: [],
   };
 
-  // Displays search results in the HTML page. Creates a new div element for each exercise in the exercises array, with a name and a button to add the exercise to the current workout. The button has data attributes to store the exercise ID, type, and difficulty, so that we can use them later when adding the exercise to the workout.
+  // ********************
+  // DOM manipulation functions
+  // ********************
+
+  // Displays search results of the exercises. Creates a div for each exercise and appends it to the searchResults div in workout.ejs.
   function displaySearchResults(exercises) {
     const searchResults = document.getElementById("searchResults");
     searchResults.innerHTML = "";
@@ -21,9 +30,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.error("No exercises found");
         continue;
       }
-
       const div = document.createElement("div");
       div.classList.add("search-result");
+
+      // Add data attributes to the div to store the exercise id, type and difficulty for later use
       div.innerHTML = `
         <span >${exercise.name}</span>
         <button class="add-exercise" data-id="${exercise._id}" data-type="${exercise.type}" data-difficulty="${exercise.difficulty}">+</button>
@@ -33,7 +43,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // Displays a modal with more information about the exercise. Creates a new div element with the equipment and instructions for the exercise. Uses the exercise-card-template in the HTML file.
+  // Displays a new card in the current workout container with the given exercise name. Uses the exercise-card-template in the HTML file.
+  function displayCurrentWorkoutExercise(exerciseId, exerciseName) {
+    const currentWorkout = document.getElementById("currentWorkout");
+    const template = document.getElementById("exercise-card-template");
+
+    const card = template.content.cloneNode(true).querySelector(".card");
+
+    const title = card.querySelector(".card-title");
+    title.textContent = `${exerciseName}`;
+
+    const removeButton = document.createElement("button");
+    removeButton.classList.add("remove-exercise");
+    removeButton.textContent = "Remove";
+    card.querySelector(".card-actions").appendChild(removeButton);
+
+    currentWorkout.appendChild(card);
+    return card;
+  }
+
+  // Modal for showing exercise instructions and equipment
   function displayMoreInfoModal(equipment, instructions) {
     // Create the modal container
     const modal = document.createElement("div");
@@ -55,55 +84,88 @@ document.addEventListener("DOMContentLoaded", async () => {
     <button class="close-modal">Close</button>
     `;
 
-    // Add the modal content to the modal container
     modal.appendChild(modalContent);
 
-    // Add the modal to the body
     document.body.appendChild(modal);
 
-    // Add event listener to close the modal
     document.querySelector(".close-modal").addEventListener("click", () => {
       document.body.removeChild(modal);
     });
   }
 
-  // Displays a new card in the current workout container with the given exercise name. Uses the exercise-card-template in the HTML file.
-  function displayCurrentWorkoutExercise(exerciseId, exerciseName) {
-    const currentWorkout = document.getElementById("currentWorkout");
-    const template = document.getElementById("exercise-card-template");
+  // Handles adding an exercise to the workoutData object and displaying it in the current workout section.
+  // TODO: Refactor this function
+  function handleAddExercise(e) {
+    if (e.target.classList.contains("add-exercise")) {
+      const exerciseId = e.target.dataset.id; // Get the exercise id from the data-id attribute which we added to the button in displaySearchResults.
+      const exerciseName = e.target.previousElementSibling.textContent; // Get the exercise name from the previous sibling element's textContent, which is the exercise name.
+      const exerciseType = e.target.dataset.type; // Added to be used if we are going to implement features for cardio types.
+      const exerciseDifficulty = e.target.dataset.difficulty;
+      const baseScore = getBaseScore(exerciseDifficulty); // Get the base score for the exercise based on its difficulty.
 
-    // Create a copy of the template
-    const card = template.content.cloneNode(true).querySelector(".card");
+      // Add the exercise to the workoutData object, can be updated and then be used to send to the API to create a new workout.
+      workoutData.exercises.push({
+        exerciseId,
+        sets: [],
+        type: exerciseType,
+        difficulty: exerciseDifficulty,
+        baseScore: baseScore,
+        points: 0,
+      });
 
-    // Update the card title with exercise name
-    const title = card.querySelector(".card-title");
-    title.textContent = `${exerciseName}`;
+      // Display the exercise in the current workout container
+      const newExerciseCard = displayCurrentWorkoutExercise(
+        exerciseId,
+        exerciseName
+      );
+      newExerciseCard.addEventListener("input", (event) => {
+        // Add an event listener to the new exercise card to listen for changes to the sets, for every time the user changes the weight or reps input.
+        if (
+          // If statement not strictly necessary, added in case cardio exercises are implemented.
+          event.target.classList.contains("weight-input") ||
+          event.target.classList.contains("reps-input")
+        ) {
+          // Get the updated sets
+          const setRows = newExerciseCard.querySelectorAll(".set-row");
+          const sets = [];
 
-    // Add the remove button to the card
-    const removeButton = document.createElement("button");
-    removeButton.classList.add("remove-exercise");
-    removeButton.textContent = "Remove";
-    card.querySelector(".card-actions").appendChild(removeButton);
+          for (const setRow of setRows) {
+            const weightInput = setRow.querySelector(".weight-input");
+            const repsInput = setRow.querySelector(".reps-input");
 
-    // Append the card to the current workout container
-    currentWorkout.appendChild(card);
-    return card;
+            const weight = parseFloat(weightInput.value) || 0;
+            const reps = parseInt(repsInput.value) || 0;
+
+            const pointsPerKg = getBaseScore(exerciseDifficulty);
+            sets.push({
+              weight: weight,
+              reps: reps,
+              pointsPerKg: pointsPerKg,
+            });
+          }
+
+          // Find the card index in the current workout by finding the index of the card in the current workout container's children. Using Array.from to convert the HTMLCollection to an array in order to use indexOf.
+          const currentWorkout = document.getElementById("currentWorkout");
+          const cardIndex = Array.from(currentWorkout.children).indexOf(
+            newExerciseCard
+          );
+
+          // Update the sets in the workoutData object
+          workoutData.exercises[cardIndex].sets = sets;
+        }
+      });
+    }
   }
-  // Displays the workout summary modal. Creates a new div element with a textarea for notes and a button to save the notes. When the button is clicked, the workout is finished by calling the finishWorkout function. When the workout is finished, the modal content is updated with the workout summary.
-  async function getExerciseNameById(exerciseId) {
-    // Your implementation of the getExerciseNameById function
-  }
 
-  async function displayWorkoutSummaryModal() {
-    // Create the modal container
+  // Displays the workout summary modal, adds a notes input for the user, and calls the finishWorkout function when the user clicks the "Finished" button.
+  // TODO: Refactor this function
+  function displayWorkoutSummaryModal() {
     const modal = document.createElement("div");
     modal.classList.add("modal");
 
-    // Create the modal content container
     const modalContent = document.createElement("div");
     modalContent.classList.add("modal-content");
 
-    // Add the input fields to the modal content
     modalContent.innerHTML = `
       <h3>Workout Summary</h3>
       <p>Notes:</p>
@@ -111,17 +173,15 @@ document.addEventListener("DOMContentLoaded", async () => {
       <button class="save-notes close-modal">Finished</button>
     `;
 
-    // Add the modal content to the modal container
     modal.appendChild(modalContent);
 
-    // Add the modal to the body
     document.body.appendChild(modal);
 
     document
       .querySelector(".save-notes")
       .addEventListener("click", async () => {
         const notes = document.getElementById("workout-notes").value;
-        workoutData.notes = notes;
+        workoutData.notes = notes; // Add the notes to the workout data
         const workout = await finishWorkout(workoutId, workoutData);
         if (workout) {
           // Fetch the exercise names
@@ -147,6 +207,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 <th>Points</th>
               </tr>`;
 
+            // Calculate the total points for the exercise
             exercise.sets.forEach((set, setIndex) => {
               const setPoints = set.weight * set.reps * set.pointsPerKg;
               totalWorkoutPoints += setPoints;
@@ -171,11 +232,11 @@ document.addEventListener("DOMContentLoaded", async () => {
           <button class="close-modal">Close</button>
         `;
 
-          // Add event listener to close the modal
           document
             .querySelector(".close-modal")
             .addEventListener("click", () => {
               document.body.removeChild(modal);
+              window.location.href = "/profile"; // Redirect to profile page
             });
         }
       });
@@ -185,107 +246,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   // API interaction functions
   // ********************
 
-  // Handles search form submission. Gets the search term from the input field and calls the fetchExercises function to get the exercises from the API. Then calls the displaySearchResults function to display the results.
-  async function searchExercises(e) {
-    e.preventDefault();
-    const search = document.getElementById("search").value;
-    const exercises = await fetchExercises(
-      `/workout/search?search=${encodeURIComponent(search)}`
-    );
-    displaySearchResults(exercises);
-  }
-
-  // Fetches exercises from the API. Returns an array of exercises.
+  // Interacts with onSearchFormSubmit to fetch exercises from the API based on the search query.
   async function fetchExercises(url) {
     const response = await fetch(url);
     const data = await response.json();
     return data;
   }
 
-  // Sends a POST request to create a new workout with the given name and sets workoutId to the created workout's ID.
-  async function createNewWorkout(name) {
-    const response = await fetch("/workout/create-workout", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        workoutName: name,
-      }),
-    });
-
-    if (response.ok) {
-      const workout = await response.json();
-      workoutId = workout._id;
-      workoutData.workoutId = workoutId;
-      console.log("Workout ID:", workoutId);
-      return true;
-    } else {
-      console.error("Error creating workout");
-      return false;
-    }
-  }
-
-  // Handles adding an exercise to the current workout. Gets the exercise ID from the button's data-id attribute. Gets the sets from the input fields in the DOM. Sends a POST request to the API to add the exercise to the current workout. If the request is successful, calls the displayCurrentWorkoutExercise function to display the exercise in the current workout container.
-  async function handleAddExercise(e) {
-    if (e.target.classList.contains("add-exercise")) {
-      const exerciseId = e.target.dataset.id;
-      const exerciseName = e.target.previousElementSibling.textContent;
-      const exerciseType = e.target.dataset.type; // Get the exercise type from the data-type attribute
-      const exerciseDifficulty = e.target.dataset.difficulty; // Get the exercise difficulty from the data-difficulty attribute
-      const baseScore = getBaseScore(exerciseDifficulty);
-      console.log("exerciseType:", exerciseType);
-      console.log("exerciseDifficulty:", exerciseDifficulty);
-
-      // Add the exercise to the workoutData object
-      workoutData.exercises.push({
-        exerciseId,
-        sets: [],
-        type: exerciseType, // Add the exercise type to the workoutData object
-        difficulty: exerciseDifficulty, // Add the exercise difficulty to the workoutData object
-        baseScore: baseScore,
-        points: 0,
-      });
-
-      // Display the exercise in the current workout container
-      const newExerciseCard = displayCurrentWorkoutExercise(
-        exerciseId,
-        exerciseName,
-        exerciseType
-      );
-      newExerciseCard.addEventListener("input", (event) => {
-        if (
-          event.target.classList.contains("weight-input") ||
-          event.target.classList.contains("reps-input")
-        ) {
-          // Get the updated sets
-          const setRows = newExerciseCard.querySelectorAll(".set-row");
-          const sets = [];
-
-          for (const setRow of setRows) {
-            const weightInput = setRow.querySelector(".weight-input");
-            const repsInput = setRow.querySelector(".reps-input");
-
-            sets.push({
-              weight: parseFloat(weightInput.value) || 0,
-              reps: parseInt(repsInput.value) || 0,
-              pointsPerKg: baseScore,
-            });
-          }
-
-          // Find the card index in the current workout
-          const currentWorkout = document.getElementById("currentWorkout");
-          const cardIndex = Array.from(currentWorkout.children).indexOf(
-            newExerciseCard
-          );
-
-          // Update the sets in the workoutData object
-          workoutData.exercises[cardIndex].sets = sets;
-        }
-      });
-    }
-  }
-
+  // Remove the exercise from the workoutData object and the DOM.
   async function handleRemoveExercise(e) {
     // Find the card and its index in the current workout
     const currentWorkout = document.getElementById("currentWorkout");
@@ -299,7 +267,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     currentWorkout.removeChild(card);
   }
 
-  // Sends a PUT request to the API to finish the workout. Returns the finished workout.
+  // Sends a PUT request to the API to finish the workout. Also calculates total points for the workout.
+  // TODO: Refactor this function (total points calculation should probably be done elsewhere)
   async function finishWorkout(workoutId, workoutData) {
     if (!workoutId) {
       console.error("Workout ID is not set. Unable to finish workout.");
@@ -310,7 +279,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     let totalPoints = 0;
     for (const exercise of workoutData.exercises) {
       let exercisePoints = 0;
-      const baseScore = exercise.baseScore;
 
       exercise.sets.forEach((set) => {
         exercisePoints += set.weight * set.reps * set.pointsPerKg;
@@ -340,19 +308,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  function getBaseScore(difficulty) {
-    switch (difficulty) {
-      case "beginner":
-        return 0.1;
-      case "intermediate":
-        return 0.25;
-      case "expert":
-        return 0.5;
-      default:
-        return 0.1;
-    }
-  }
-
   // Fetches an exercise by its ID and returns its name.
   async function getExerciseNameById(exerciseId) {
     try {
@@ -370,52 +325,104 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // ********************
-  // Event listeners
-  // ********************
+  // Sends a POST request to create a new workout with the given name and sets workoutId to the created workout's ID.
+  async function createNewWorkout(name) {
+    const response = await fetch("/workout/create-workout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        workoutName: name,
+      }),
+    });
 
-  // Event listener for search form
-  document
-    .getElementById("searchForm")
-    .addEventListener("submit", searchExercises);
-
-  // Event listener for button to add exercise to workout
-  document.addEventListener("click", async (e) => {
-    if (e.target.classList.contains("add-exercise")) {
-      await handleAddExercise(e);
+    if (response.ok) {
+      const workout = await response.json();
+      workoutId = workout._id;
+      workoutData.workoutId = workoutId;
+      console.log("Workout ID:", workoutId);
+      return true;
+    } else {
+      console.error("Error creating workout");
+      return false;
     }
-  });
+  }
+  // ********************
+  // HELPER FUNCTIONS
+  // ********************
 
-  // Event listener for button for more info button
-  document.addEventListener("click", (event) => {
+  // Gets the base score for an exercise based on its difficulty
+  function getBaseScore(difficulty, minPoints = 0) {
+    switch (difficulty) {
+      case "beginner":
+        return 0.1;
+      case "intermediate":
+        return 0.25;
+      case "expert":
+        return 0.5;
+      default:
+        console.error(`Invalid difficulty: ${difficulty}`);
+        return 0.1;
+    }
+  }
+  // ********************
+  // Event handlers
+  // ********************
+
+  async function onSearchFormSubmit(e) {
+    e.preventDefault();
+    const search = document.getElementById("search").value;
+    const exercises = await fetchExercises(
+      `/workout/search?search=${encodeURIComponent(search)}`
+    );
+    displaySearchResults(exercises);
+  }
+
+  function onAddExerciseButtonClick(e) {
+    if (e.target.classList.contains("add-exercise")) {
+      handleAddExercise(e);
+    }
+  }
+
+  async function onRemoveExerciseButtonClick(e) {
+    if (e.target.classList.contains("remove-exercise")) {
+      await handleRemoveExercise(e);
+    }
+  }
+
+  function onMoreInfoButtonClick(event) {
     if (event.target.classList.contains("more-info")) {
       const equipment = event.target.dataset.equipment;
       const instructions = event.target.dataset.instructions;
       displayMoreInfoModal(equipment, instructions);
     }
-  });
+  }
 
-  // Event listener for button to remove exercise from workout
-  document.addEventListener("click", async (e) => {
-    if (e.target.classList.contains("remove-exercise")) {
-      await handleRemoveExercise(e);
-    }
-  });
+  async function onFinishWorkoutButtonClick() {
+    displayWorkoutSummaryModal(workoutId, workoutData);
+  }
 
-  // Event listener for button to finish workout and show workout summary
+  // ********************
+  // Event listeners
+  // ********************
+  document
+    .getElementById("searchForm")
+    .addEventListener("submit", onSearchFormSubmit);
+
+  document.addEventListener("click", onAddExerciseButtonClick);
+  document.addEventListener("click", onMoreInfoButtonClick);
+  document.addEventListener("click", onRemoveExerciseButtonClick);
+
   document
     .getElementById("finish-workout")
-    .addEventListener("click", async () => {
-      // Display the Workout Summary Modal and pass the workoutId and workoutData
-      displayWorkoutSummaryModal(workoutId, workoutData);
-    });
+    .addEventListener("click", onFinishWorkoutButtonClick);
+
   // ********************
   // Initialization
   // ********************
 
-  const workoutName = "My Workout";
-
   (async () => {
-    await createNewWorkout(workoutName);
+    await createNewWorkout(WORKOUT_NAME);
   })();
 });
