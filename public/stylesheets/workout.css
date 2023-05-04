@@ -39,6 +39,14 @@
   margin-bottom: 0.5rem;
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
   padding: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  /* align-items: center; */
+}
+
+.search-result span {
+  padding: 0.2rem;
+  margin-right: 1rem;
 }
 
 .card {
@@ -81,6 +89,7 @@
   cursor: pointer;
   margin-left: 0.5rem;
   padding: 5px 8px;
+  margin-left: auto;
 }
 
 .add-exercise:hover {
@@ -98,6 +107,7 @@
   transition: background-color 0.3s ease, color 0.3s ease;
   margin-left: 0.5rem;
   padding: 5px 10px;
+  margin-left: 1rem;
 }
 
 .more-info:hover {
