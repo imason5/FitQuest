@@ -82,10 +82,13 @@ router.post("/profile", uploader.single("imageUrl"), async (req, res, next) => {
           currentUser
             .save()
             .then((loggedInUser) => {
-              res.render("protected/profile", {
-                loggedInUser,
-                loggedInUserWorkouts: currentUserWorkouts,
-                navSwitch: true,
+              req.session.loggedInUser = loggedInUser;
+              req.session.save(function (err) {
+                return res.render("protected/profile", {
+                  loggedInUser,
+                  loggedInUserWorkouts: currentUserWorkouts,
+                  navSwitch: true,
+                });
               });
             })
             .catch((error) => {
