@@ -130,6 +130,13 @@ p {
   background-color: #fbb03b;
 }
 
+.index-login {
+  z-index: 1;
+  margin-top: 0.5rem;
+  background-color: #212529;
+  color: #fbb03b;
+}
+
 /* Footer settings */
 footer {
   padding: 0;
