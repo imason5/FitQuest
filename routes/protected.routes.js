@@ -50,6 +50,7 @@ router.post("/profile", uploader.single("imageUrl"), async (req, res, next) => {
             loggedInUser: currentUser,
             loggedInUserWorkouts: currentUserWorkouts,
             errorMessage: "Username or email already taken",
+            navSwitch: true,
           });
         } else if (!existingUser || existingUserId === userId) {
           currentUser.username = req.body.username;
@@ -74,6 +75,7 @@ router.post("/profile", uploader.single("imageUrl"), async (req, res, next) => {
               loggedInUser: currentUser,
               loggedInUserWorkouts: currentUserWorkouts,
               errorMessage: "Password is not strong enough",
+              navSwitch: true,
             });
           }
 
@@ -83,7 +85,7 @@ router.post("/profile", uploader.single("imageUrl"), async (req, res, next) => {
               res.render("protected/profile", {
                 loggedInUser,
                 loggedInUserWorkouts: currentUserWorkouts,
-                navSwtich: true,
+                navSwitch: true,
               });
             })
             .catch((error) => {
@@ -97,6 +99,7 @@ router.post("/profile", uploader.single("imageUrl"), async (req, res, next) => {
       loggedInUser: currentUser,
       loggedInUserWorkouts: currentUserWorkouts,
       errorMessage: "Error updating profile",
+      navSwitch: true,
     });
   }
 });
