@@ -41,7 +41,7 @@ function createSetRow(setNumber) {
   if (setNumber > 1) {
     const deleteButton = document.createElement("button");
     deleteButton.classList.add("btn", "btn-danger", "delete-set-button");
-    deleteButton.textContent = "Delete Set";
+    deleteButton.textContent = "-";
     deleteButton.addEventListener("click", (event) => {
       setRow.remove();
     });
