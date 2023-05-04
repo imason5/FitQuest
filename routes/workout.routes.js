@@ -43,9 +43,6 @@ router.get("/search", async (req, res) => {
 router.post("/exercise-log", isLoggedIn, async (req, res) => {
   const { workoutId, exerciseId, sets } = req.body;
 
-  console.log("workoutId (before creating ExerciseLog):", workoutId);
-  console.log("exerciseId (before creating ExerciseLog):", exerciseId);
-  console.log("sets (before creating ExerciseLog):", sets);
   const exerciseLog = new ExerciseLog({
     workoutId,
     exerciseId,
@@ -60,9 +57,6 @@ router.post("/exercise-log", isLoggedIn, async (req, res) => {
     });
 
     res.sendStatus(200);
-    console.log("Received workoutId:", workoutId);
-    console.log("Received exerciseId:", exerciseId);
-    console.log("Received sets:", sets);
   } catch (error) {
     console.error("Error saving ExerciseLog:", error);
     res.sendStatus(500);
@@ -138,7 +132,6 @@ router.get("/exercise-log/:workoutId", async (req, res) => {
       workoutId: workout._id,
     }).populate("exerciseId");
 
-    console.log("Fetched exerciseLogs:", exerciseLogs);
     res.json(exerciseLogs);
   } catch (error) {
     console.error(error);
@@ -180,8 +173,6 @@ router.put("/finish-workout/:workoutId", isLoggedIn, async (req, res) => {
     workout.notes = notes;
 
     const updatedWorkout = await workout.save();
-
-    console.log("Updated workout:", updatedWorkout);
 
     // Send the updated workout as a response
     res.status(200).send(updatedWorkout);

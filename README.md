@@ -12,7 +12,7 @@ FitQuest is a fitness tracker app that allows users to create and track daily wo
 
 On their profile page, users can edit a number of details about themselves like profile pictures and weight, and they can see a summary of their workout history.
 
-Technologies used include JS ES6, Express, MongoDB, Mongoose, and Bootstrap.
+Technologies used include JS ES6, Express, MongoDB, Mongoose, and Bootstrap. Styled with a mobile first approach.
 
 This app utilizes the [API Ninjas](https://api-ninjas.com/api/exercises) Exercise API to provide a list of exercises to choose from, complete with difficulty levels, equipment needed, and instructions. It also uses the [Cloudinary](https://cloudinary.com/) API to allow users to upload profile pictures.
 
@@ -124,6 +124,6 @@ To summarize:
 
 - [Figma Planning](https://www.figma.com/file/vCEEt3DaIejm6TgjVrKNCQ/Project-2--Fitness-Tracker?node-id=0-1&t=HwiKiNRbAhDta7CA-0)
 - [Trello Link](https://trello.com/b/c5HyXBKN/fitness-tracker)
-- [Slides Link]()
+- [Slides Link](https://docs.google.com/presentation/d/1vtWyc9qhIkNVNhLna_6XMRuG0zeLyOb4n0h1UxaZfaw/edit?usp=sharing)
 - [Github repository Link](https://github.com/imason5/FitQuest)
 - [Deployment Link](https://fitness-tracker.adaptable.app/)
