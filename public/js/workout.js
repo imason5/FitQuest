@@ -168,7 +168,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     modalContent.innerHTML = `
       <h3>Workout Summary</h3>
-      <p>Notes:</p>
+      <p class="workout-notes-heading">Notes:</p>
       <textarea id="workout-notes"></textarea>
       <button class="save-notes close-modal">Finished</button>
     `;
@@ -198,12 +198,14 @@ document.addEventListener("DOMContentLoaded", async () => {
             const exerciseName = exerciseNames[index];
 
             exerciseListHTML += `
-            <h4>Exercise ${index + 1}: ${exerciseName}</h4>
+            <p class="exercise-summary-title">Exercise ${
+              index + 1
+            }: ${exerciseName}</p>
             <table>
-              <tr>
+              <tr class="exercise-summary-row">
                 <th>Set</th>
                 <th>kg</th>
-                <th>reps</th>
+                <th>Reps</th>
                 <th>Points</th>
               </tr>`;
 
@@ -225,9 +227,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
           // Update the modal content with the workout summary and exercise list
           modalContent.innerHTML = `
-          <h3>Workout Summary</h3>
-          <p>Total Weight: ${workout.totalWeight} kg</p>
-          <p>Total Points: ${totalWorkoutPoints}</p>
+          <h4>Workout Summary</h4>
+          <p class="exercise-summary-bold">Total Weight: ${workout.totalWeight}kg</p>
+          <p class="exercise-summary-bold">Total Points: ${totalWorkoutPoints}</p>
           ${exerciseListHTML}
           <button class="close-modal">Close</button>
         `;
