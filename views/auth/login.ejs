@@ -1,16 +1,30 @@
-<h1>Login Page</h1>
-<form action="/login" method="post">
-  <label for="username"
-    >Username:
-    <input type="text" name="username" placeholder="username" required />
-  </label>
-  <label for="password"
-    >Password:
-    <input type="password" name="password" placeholder="********" required />
-  </label>
-  <br />
-  <button type="submit">Login</button>
-</form>
-<p style="color: red">
-  <%- typeof errorMessage !== 'undefined' ? errorMessage : "" %>
-</p>
+<section class="container">
+  <h1>Login Page</h1>
+  <form action="/login" method="post">
+    <label class="alignedInput" for="username"
+      >Username:
+      <input
+        type="text"
+        name="username"
+        placeholder="username"
+        class="form-control"
+        required
+      />
+    </label>
+    <label class="alignedInput" for="password"
+      >Password:
+      <input
+        type="password"
+        name="password"
+        placeholder="********"
+        class="form-control"
+        required
+      />
+    </label>
+    <br />
+    <button type="submit" class="btn-primary">Login</button>
+  </form>
+  <p style="color: red">
+    <%- typeof errorMessage !== 'undefined' ? errorMessage : "" %>
+  </p>
+</section>

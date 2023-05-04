@@ -1,73 +1,80 @@
-<h1>Signup Page</h1>
-<form action="/signup" method="post" enctype="multipart/form-data">
-  <label for="username">
-    <p>Username:</p>
-    <input
-      type="text"
-      name="username"
-      pattern="[A-Za-z0-9_]{3,20}"
-      title="Username must be 3-20 characters long and contain only letters, numbers, and underscores."
-      required
-      class="form-control"
-    />
-  </label>
-  <label for="password">
-    <p>Password:</p>
-    <input
-      type="password"
-      name="password"
-      pattern="(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}"
-      title="Password must be at least 8 characters long, and contain at least one letter and one number."
-      required
-      class="form-control"
-    />
-  </label>
-  <label for="email">
-    <p>Email:</p>
-    <input
-      type="email"
-      name="email"
-      pattern="^[\w\-\.]+@([\w-]+\.)+[\w]{2,7}$"
-      title="Please enter a valid email address."
-      required
-      class="form-control"
-    />
-  </label>
-  <label for="age">
-    <p>Age:</p>
-    <input type="number" name="age" min="0" class="form-control" />
-  </label>
-  <label for="gender">
-    <p>Gender:</p>
-    <input type="radio" name="gender" value="male" />Male
-    <input type="radio" name="gender" value="female" />Female
-    <input type="radio" name="gender" value="other" />Other
-  </label>
-  <label for="weight">
-    <p>Weight:</p>
-    <input type="number" name="weight" min="0" class="form-control" />
-  </label>
-  <label for="height">
-    <p>Height:</p>
-    <input type="number" name="height" min="0" class="form-control" />
-  </label>
-  <label for="bio">
-    <p>Bio:</p>
-    <textarea
-      name="bio"
-      id="bio"
-      cols="50"
-      rows="2"
-      class="form-control"
-    ></textarea>
-  </label>
-  <label for="imageUrl">
-    <p>Profile Pic:</p>
-    <input type="file" name="imageUrl" accept="image/png, image/jpg" />
-  </label>
-  <br />
-  <button type="submit" class="btn-primary">Signup</button>
-</form>
-<p style="color: red">
-  <%- typeof errorMessage !== 'undefined' ? errorMessage : "" %>
-</p>
+<section class="container">
+  <h1>Signup Page</h1>
+  <form action="/signup" method="post" enctype="multipart/form-data">
+    <label for="username">
+      <p>Username:</p>
+      <input
+        type="text"
+        name="username"
+        pattern="[A-Za-z0-9_]{3,20}"
+        title="Username must be 3-20 characters long and contain only letters, numbers, and underscores."
+        required
+        class="form-control"
+      />
+    </label>
+    <label for="password">
+      <p>Password:</p>
+      <input
+        type="password"
+        name="password"
+        pattern="(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}"
+        title="Password must be at least 8 characters long, and contain at least one letter and one number."
+        required
+        class="form-control"
+      />
+    </label>
+    <label for="email">
+      <p>Email:</p>
+      <input
+        type="email"
+        name="email"
+        pattern="^[\w\-\.]+@([\w-]+\.)+[\w]{2,7}$"
+        title="Please enter a valid email address."
+        required
+        class="form-control"
+      />
+    </label>
+    <label for="age">
+      <p>Age:</p>
+      <input type="number" name="age" min="0" class="form-control" />
+    </label>
+    <label for="gender">
+      <p>Gender:</p>
+      <input type="radio" name="gender" value="male" />Male
+      <input type="radio" name="gender" value="female" />Female
+      <input type="radio" name="gender" value="other" />Other
+    </label>
+    <label for="weight">
+      <p>Weight:</p>
+      <input type="number" name="weight" min="0" class="form-control" />
+    </label>
+    <label for="height">
+      <p>Height:</p>
+      <input type="number" name="height" min="0" class="form-control" />
+    </label>
+    <label for="bio">
+      <p>Bio:</p>
+      <textarea
+        name="bio"
+        id="bio"
+        cols="50"
+        rows="2"
+        class="form-control"
+      ></textarea>
+    </label>
+    <label for="imageUrl">
+      <p>Profile Pic:</p>
+      <input
+        type="file"
+        name="imageUrl"
+        accept="image/png, image/jpg"
+        class="form-control"
+      />
+    </label>
+    <br />
+    <button type="submit" class="btn-primary">Signup</button>
+  </form>
+  <p style="color: red">
+    <%- typeof errorMessage !== 'undefined' ? errorMessage : "" %>
+  </p>
+</section>
