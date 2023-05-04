@@ -27,10 +27,9 @@
   </p>
   <div id="personalWorkouts">
     <h3>Workout History</h3>
-
-    <div>
+    <div class="table-wrapper">
       <table class="eachworkout">
-        <tbody>
+        <tbody class="workout-list">
           <% loggedInUserWorkouts.forEach(currentWorkout => { %> <% if
           (currentWorkout.completed) { %>
           <tr class="workout-card" data-workout-id="<%- currentWorkout._id %>">
