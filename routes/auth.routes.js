@@ -23,10 +23,13 @@ router.get("/signup", (req, res, next) => {
 /* --- POST: signup page --- */
 router.post(
   "/signup",
-  validateSignupInput,
+  /*validateSignupInput,*/
   uploader.single("imageUrl"),
   async (req, res, next) => {
     try {
+      //console.log(req.body);
+      //console.log(req.file);
+
       const isExistingUsername = await User.findOne({
         username: req.body.username,
       });
@@ -40,7 +43,7 @@ router.post(
             const salt = bcryptjs.genSaltSync(roundOfSalt);
             const passwordHash = bcryptjs.hashSync(req.body.password, salt);
             // Create a new user via User model
-            await User.create({
+            const newUser = await User.create({
               username: req.body.username,
               password: passwordHash,
               email: req.body.email,
@@ -49,15 +52,25 @@ router.post(
               weight: req.body.weight,
               height: req.body.height,
               bio: req.body.bio,
-              profilePic: req.file.path,
             });
-            // After Signing up, then redirect to login page - redirect
+            // If user uploads profile picture, then update the profilePic url to req.file.path.
+            if (req.file) {
+              await User.findByIdAndUpdate(
+                newUser._id,
+                {
+                  profilePic: req.file.path,
+                },
+                { new: true }
+              );
+            }
+            // After Signing up, then redirect to login page
             res.render("auth/login", { navSwitch: false });
           } else {
             // When psw is not strong enough
             res.render("auth/signup", {
               username: req.body.username,
-              errorMessage: "Password is not strong enough",
+              errorMessage:
+                "Password must be at least 8 characters long, and contain at least one letter and one number.",
               navSwitch: false,
             });
           }
@@ -66,7 +79,7 @@ router.post(
           res.render("auth/signup", {
             username: req.body.username,
             email: req.body.email,
-            errorMessage: "Email is in use",
+            errorMessage: "This email is in use",
             navSwitch: false,
           });
         }
@@ -74,7 +87,8 @@ router.post(
         // When username is already existed
         res.render("auth/signup", {
           username: req.body.username,
-          errorMessage: "Username is in use",
+          email: req.body.email,
+          errorMessage: "This username is in use",
           navSwitch: false,
         });
       }

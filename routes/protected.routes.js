@@ -36,7 +36,11 @@ router.post("/profile", uploader.single("imageUrl"), async (req, res, next) => {
   try {
     const { username, email, password, userId } = req.body;
     const currentUser = await User.findById(userId);
-
+    const currentUserWorkouts = await Workout.find(
+      { userId: userId, completed: true },
+      null,
+      { sort: { date: -1 } }
+    );
     await User.findOne({ $or: [{ username }, { email }] })
       .then((existingUser) => {
         const existingUserId = existingUser._id.toString();
@@ -44,7 +48,9 @@ router.post("/profile", uploader.single("imageUrl"), async (req, res, next) => {
         if (existingUser && existingUserId !== userId) {
           return res.status(400).render("protected/profile", {
             loggedInUser: currentUser,
+            loggedInUserWorkouts: currentUserWorkouts,
             errorMessage: "Username or email already taken",
+            navSwitch: true,
           });
         } else if (!existingUser || existingUserId === userId) {
           currentUser.username = req.body.username;
@@ -54,15 +60,22 @@ router.post("/profile", uploader.single("imageUrl"), async (req, res, next) => {
           currentUser.weight = req.body.weight;
           currentUser.height = req.body.height;
           currentUser.bio = req.body.bio;
-          currentUser.profilePic = req.file.path;
 
+          // If user is updating profile picture, then profilePic url equals to req.file.path.
+          if (req.file) {
+            currentUser.profilePic = req.file.path;
+          }
+
+          // If user is updating password
           if (password && pwdRegex.test(password)) {
             const salt = bcryptjs.genSaltSync(roundOfSalt);
             currentUser.password = bcryptjs.hashSync(password, salt);
           } else if (password && !pwdRegex.test(password)) {
             return res.status(400).render("protected/profile", {
               loggedInUser: currentUser,
+              loggedInUserWorkouts: currentUserWorkouts,
               errorMessage: "Password is not strong enough",
+              navSwitch: true,
             });
           }
 
@@ -71,7 +84,8 @@ router.post("/profile", uploader.single("imageUrl"), async (req, res, next) => {
             .then((loggedInUser) => {
               res.render("protected/profile", {
                 loggedInUser,
-                navSwtich: true,
+                loggedInUserWorkouts: currentUserWorkouts,
+                navSwitch: true,
               });
             })
             .catch((error) => {
@@ -83,7 +97,9 @@ router.post("/profile", uploader.single("imageUrl"), async (req, res, next) => {
   } catch (error) {
     res.render("protected/profile", {
       loggedInUser: currentUser,
+      loggedInUserWorkouts: currentUserWorkouts,
       errorMessage: "Error updating profile",
+      navSwitch: true,
     });
   }
 });
