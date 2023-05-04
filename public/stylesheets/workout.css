@@ -18,7 +18,7 @@
   top: 0;
   left: 0;
   width: 100%;
-  max-height: 80%;
+  max-height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
@@ -39,11 +39,20 @@
   margin-bottom: 0.5rem;
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
   padding: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  background-color: #fff;
+}
+
+.search-result span {
+  padding: 0.2rem;
+  margin-right: 1rem;
 }
 
 .card {
   margin-bottom: 0.5rem;
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  position: relative;
 }
 
 .card-title {
@@ -80,6 +89,7 @@
   cursor: pointer;
   margin-left: 0.5rem;
   padding: 5px 8px;
+  margin-left: auto;
 }
 
 .add-exercise:hover {
@@ -97,6 +107,7 @@
   transition: background-color 0.3s ease, color 0.3s ease;
   margin-left: 0.5rem;
   padding: 5px 10px;
+  margin-left: 1rem;
 }
 
 .more-info:hover {
@@ -119,4 +130,25 @@
   background-color: #fff;
   color: #333;
   box-shadow: 0 0 0 1px #333;
+}
+
+.add-set-button {
+  padding: 10px 10px;
+}
+
+.remove-exercise {
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+}
+
+.remove-exercise:hover {
+  background-color: #ddd;
+  border-color: #f00;
+  color: #f00;
 }

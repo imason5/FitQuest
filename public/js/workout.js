@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const removeButton = document.createElement("button");
     removeButton.classList.add("remove-exercise");
-    removeButton.textContent = "Remove";
+    removeButton.textContent = "X";
     card.querySelector(".card-actions").appendChild(removeButton);
 
     currentWorkout.appendChild(card);
