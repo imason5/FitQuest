@@ -114,6 +114,13 @@ p {
   bottom: 10rem;
   left: 10%;
 }
+
+.hero-image-texts h1 {
+  font-weight: bold;
+  color: white;
+  letter-spacing: 0.05rem;
+}
+
 .hero-image-texts span {
   font-size: 2rem;
   font-weight: bold;
@@ -131,6 +138,16 @@ p {
 .btn-warning {
   z-index: 1;
   background-color: #fbb03b;
+  margin-top: 1.5rem;
+}
+
+.index-signup {
+  padding: 1rem 2rem;
+  margin-bottom: 1rem;
+}
+
+.index-signup b {
+  font-size: 16px;
 }
 
 .index-login {
