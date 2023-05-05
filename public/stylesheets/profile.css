@@ -1,12 +1,57 @@
+#profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 0;
+}
+
 .personalInfo {
   display: flex;
-  justify-content: flex-start;
-  flex-wrap: wrap;
+  display: flex;
+  justify-content: center;
+}
+
+.personalInfo-image-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.personalInfo-image-box {
+  display: flex;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: #fbb03b 1px solid;
+  overflow: hidden;
 }
 
 .personalInfo-image {
-  max-width: 200px;
-  max-height: 200px;
+  max-width: 170px;
+  height: auto;
+  object-position: center center;
+  object-fit: cover;
+}
+
+.personalInfo-button {
+  margin-top: 1rem;
+}
+
+.personalInfo-text-box {
+  display: flex;
+  flex-direction: column;
+  width: 60vw;
+}
+
+.personalInfo-texts li {
+  list-style: none;
+  margin-bottom: 0.2rem;
+}
+
+.personalInfo-username {
+  font-size: 1.2rem;
+  font-weight: bold;
 }
 
 .eachworkout {

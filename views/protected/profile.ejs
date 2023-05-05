@@ -1,29 +1,39 @@
-<h1>Profile Page</h1>
-<div id="personalInfo-container">
-  <h3>Personal Info</h3>
+<div id="profile">
   <div class="personalInfo">
-    <img
-      class="personalInfo-image"
-      src="<%- loggedInUser.profilePic %>"
-      alt="profile-pic"
-    />
-    <ul class="personalInfo-texts">
-      <li>Username: <%- loggedInUser.username %></li>
-      <li>Email: <%- loggedInUser.email %></li>
-      <li>Age: <%- loggedInUser.age %></li>
-      <li>Gender: <%- loggedInUser.gender %></li>
-      <li>Weight: <%- loggedInUser.weight %></li>
-      <li>Height: <%- loggedInUser.height %></li>
-      <li>Bio: <%- loggedInUser.bio %></li>
-    </ul>
+    <div class="personalInfo-image-container">
+      <div class="personalInfo-image-box">
+        <img
+          class="personalInfo-image"
+          src="<%- loggedInUser.profilePic %>"
+          alt="profile-pic"
+        />
+      </div>
+      <button
+        class="btn-primary personalInfo-button"
+        type="button"
+        data-trigger-dialog="pop-up"
+      >
+        Edit
+      </button>
+    </div>
+    <div class="personalInfo-text-box">
+      <ul class="personalInfo-texts">
+        <li class="personalInfo-username">
+          Hello, <%- loggedInUser.username %>!
+        </li>
+        <li>Email: <%- loggedInUser.email %></li>
+        <li>Age: <%- loggedInUser.age %></li>
+        <li>Gender: <%- loggedInUser.gender %></li>
+        <li>Weight: <%- loggedInUser.weight %></li>
+        <li>Height: <%- loggedInUser.height %></li>
+        <li>Bio: <%- loggedInUser.bio %></li>
+      </ul>
+      <p class="warning-texts">
+        <%- typeof errorMessage !== 'undefined' ? errorMessage : "" %>
+      </p>
+    </div>
   </div>
 </div>
-<button class="btn-primary" type="button" data-trigger-dialog="pop-up">
-  Edit
-</button>
-<p style="color: red">
-  <%- typeof errorMessage !== 'undefined' ? errorMessage : "" %>
-</p>
 <div id="personalWorkouts">
   <h3>Workout History</h3>
   <div class="table-wrapper">
@@ -54,7 +64,6 @@
   </div>
 </div>
 <br />
-<a class="btn btn-primary" href="/logout">Log Out</a>
 
 <dialog id="pop-up">
   <form
