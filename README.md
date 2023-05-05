@@ -2,7 +2,7 @@
 
 <b>[Click here to see deployed project](https://fitness-tracker.adaptable.app/)</b>
 
-![FitQuest](/public/images/forReadme.png)
+<img src="/public/images/forReadme.png" style=" width:500px ; height:500px "  >
 
 <hr>
 
