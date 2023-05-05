@@ -105,6 +105,11 @@ h4 {
   align-items: center;
 }
 
+#currentWorkout {
+  overflow-y: auto;
+  max-height: 50vh;
+}
+
 /* Buttons */
 
 #finish-workout {
