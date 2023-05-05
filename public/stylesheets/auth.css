@@ -7,9 +7,9 @@
   align-items: center;
   text-align: center;
 }
-.container {
+/*.container {
   --bs-gutter-x: 0;
-}
+}*/
 .login-form {
   margin: 2rem;
 }

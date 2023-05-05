@@ -1,15 +1,11 @@
-<section id="login" class="container">
+<section id="login">
   <h1>Welcome back!</h1>
   <h4>Please log in with your account details.</h4>
   <form class="login-form" action="/login" method="post">
     <label for="username">
-      <input
-        type="text"
-        name="username"
-        placeholder="Username:"
-        class="form-control login-input"
-        required
-      />
+      <input type="text" name="username" placeholder="Username:"
+      class="form-control login-input" value="<%- typeof username !==
+      'undefined' ? username : "" %>" required />
     </label>
     <label for="password">
       <input

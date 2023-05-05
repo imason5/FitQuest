@@ -1,4 +1,4 @@
-<section id="signup" class="container">
+<section id="signup">
   <h4>Ready to get some abs?</h4>
   <form
     action="/signup"
@@ -59,7 +59,7 @@
         type="number"
         name="weight"
         min="0"
-        placehoder="Weight:"
+        placeholder="Weight:"
         class="form-control signup-input"
       />
     </label>
@@ -68,7 +68,7 @@
         type="number"
         name="height"
         min="0"
-        placehoder="Height:"
+        placeholder="Height:"
         class="form-control signup-input"
       />
     </label>
@@ -93,7 +93,7 @@
     <br />
     <button type="submit" class="btn-primary">Signup</button>
   </form>
-  <p style="color: red">
+  <p class="warning-texts">
     <%- typeof errorMessage !== 'undefined' ? errorMessage : "" %>
   </p>
 </section>

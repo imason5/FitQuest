@@ -1,15 +1,26 @@
-<div class="container">
-  <h1>Profile Page</h1>
-  <div id="personalInfo-container">
-    <h3>Personal Info</h3>
-    <div class="personalInfo">
-      <img
-        class="personalInfo-image"
-        src="<%- loggedInUser.profilePic %>"
-        alt="profile-pic"
-      />
+<div id="profile">
+  <div class="personalInfo">
+    <div class="personalInfo-image-container">
+      <div class="personalInfo-image-box">
+        <img
+          class="personalInfo-image"
+          src="<%- loggedInUser.profilePic %>"
+          alt="profile-pic"
+        />
+      </div>
+      <button
+        class="btn-primary personalInfo-button"
+        type="button"
+        data-trigger-dialog="pop-up"
+      >
+        Edit
+      </button>
+    </div>
+    <div class="personalInfo-text-box">
       <ul class="personalInfo-texts">
-        <li>Username: <%- loggedInUser.username %></li>
+        <li class="personalInfo-username">
+          Hello, <%- loggedInUser.username %>!
+        </li>
         <li>Email: <%- loggedInUser.email %></li>
         <li>Age: <%- loggedInUser.age %></li>
         <li>Gender: <%- loggedInUser.gender %></li>
@@ -17,177 +28,173 @@
         <li>Height: <%- loggedInUser.height %></li>
         <li>Bio: <%- loggedInUser.bio %></li>
       </ul>
+      <p class="warning-texts">
+        <%- typeof errorMessage !== 'undefined' ? errorMessage : "" %>
+      </p>
     </div>
   </div>
-  <button class="btn-primary" type="button" data-trigger-dialog="pop-up">
-    Edit
-  </button>
-  <p style="color: red">
-    <%- typeof errorMessage !== 'undefined' ? errorMessage : "" %>
-  </p>
-  <div id="personalWorkouts">
-    <h3>Workout History</h3>
-    <div class="table-wrapper">
-      <table class="eachworkout">
-        <tbody class="workout-list">
-          <% loggedInUserWorkouts.forEach(currentWorkout => { %> <% if
-          (currentWorkout.completed) { %>
-          <tr class="workout-card" data-workout-id="<%- currentWorkout._id %>">
-            <th scope="row">
-              <%- currentWorkout.date.toLocaleDateString('en-US', { weekday:
-              'long', year: 'numeric', month: 'long', day: 'numeric', ordinal:
-              'auto', hour: 'numeric', minute: 'numeric' }) %>
-            </th>
-
-            <td>
-              <form
-                method="POST"
-                action="/profile/workoutsDelete/<%- currentWorkout._id %>"
-                id="delete-workout-form-<%- currentWorkout._id %>"
-              >
-                <button type="submit" class="delete-workout-button">Ｘ</button>
-              </form>
-            </td>
-          </tr>
-          <% } %> <% }) %>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <br />
-  <a class="btn btn-primary" href="/logout">Log Out</a>
-
-  <dialog id="pop-up">
-    <form
-      name="profile"
-      action="/profile"
-      method="post"
-      enctype="multipart/form-data"
-    >
-      <h3>Edit Profile</h3>
-      <input type="hidden" name="userId" value="<%- loggedInUser._id %>" />
-      <label for="username" class="edit-input">
-        <p>Username:</p>
-        <input
-          type="text"
-          name="username"
-          pattern="[A-Za-z0-9_]{3,20}"
-          title="Username must be 3-20 characters long and contain only letters, numbers, and underscores."
-          value="<%- loggedInUser.username %>"
-          required
-          class="form-control"
-        />
-      </label>
-      <label for="password" class="edit-input">
-        <p>Password:</p>
-        <input
-          type="password"
-          name="password"
-          pattern="(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}"
-          title="Password must be at least 8 characters long, and contain at least one letter and one number."
-          placeholder="********"
-          class="form-control"
-        />
-      </label>
-      <label for="email">
-        <p>Email:</p>
-        <input
-          type="email"
-          name="email"
-          pattern="[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}"
-          title="Please enter a valid email address."
-          required
-          value="<%- loggedInUser.email %>"
-          class="form-control"
-        />
-      </label>
-      <label for="age">
-        <p>Age:</p>
-        <input
-          type="number"
-          name="age"
-          min="0"
-          value="<%- loggedInUser.age %>"
-          class="form-control"
-        />
-      </label>
-      <% if (loggedInUser.gender === "male") { %>
-      <label class="gender-label" for="gender">
-        <p>Gender:</p>
-        <input type="radio" name="gender" value="male" checked />Male
-        <input type="radio" name="gender" value="female" />Female
-        <input type="radio" name="gender" value="other" />Other
-      </label>
-      <% } else if (loggedInUser.gender === "female") { %>
-      <label class="gender-label" for="gender">
-        <p>Gender:</p>
-        <input type="radio" name="gender" value="male" />Male
-        <input type="radio" name="gender" value="female" checked />Female
-        <input type="radio" name="gender" value="other" />Other
-      </label>
-      <% } else if (loggedInUser.gender === "other") { %>
-      <label class="gender-label" for="gender">
-        <p>Gender:</p>
-        <input type="radio" name="gender" value="male" />Male
-        <input type="radio" name="gender" value="female" />Female
-        <input type="radio" name="gender" value="other" checked />Other
-      </label>
-      <% } else{ %>
-      <label for="gender">
-        <p>Gender:</p>
-        <input type="radio" name="gender" value="male" />Male
-        <input type="radio" name="gender" value="female" />Female
-        <input type="radio" name="gender" value="other" />Other
-      </label>
-      <% }%>
-      <label for="weight">
-        <p>Weight:</p>
-        <input
-          type="number"
-          name="weight"
-          min="0"
-          value="<%- loggedInUser.weight %>"
-          class="form-control"
-        />
-      </label>
-      <label for="height">
-        <p>Height:</p>
-        <input
-          type="number"
-          name="height"
-          min="0"
-          value="<%- loggedInUser.height %>"
-          class="form-control"
-        />
-      </label>
-      <label for="bio">
-        <p>Bio:</p>
-        <textarea name="bio" id="bio" cols="50" rows="2" class="form-control">
-  <%- loggedInUser.bio %></textarea
-        >
-      </label>
-      <label for="imageUrl">
-        <p>Profile Pic:</p>
-        <input type="file" name="imageUrl" accept="image/png, image/jpg" />
-      </label>
-      <br />
-      <div class="button-group">
-        <button type="submit" class="btn-primary">Submit</button>
-        <button type="reset" class="btn-primary">Reset</button>
-        <button value="cancel" formmethod="dialog" class="btn-primary">
-          Cancel
-        </button>
-      </div>
-    </form>
-  </dialog>
-
-  <dialog id="workout-modal">
-    <h3>Workout Details</h3>
-    <div id="workout-modal-content">
-      <!-- Workout information will be inserted here -->
-    </div>
-    <button id="workout-modal-close">Close</button>
-  </dialog>
-
-  <script src="/js/profile.js"></script>
 </div>
+<div id="personalWorkouts">
+  <h3>Workout History</h3>
+  <div class="table-wrapper">
+    <table class="eachworkout">
+      <tbody class="workout-list">
+        <% loggedInUserWorkouts.forEach(currentWorkout => { %> <% if
+        (currentWorkout.completed) { %>
+        <tr class="workout-card" data-workout-id="<%- currentWorkout._id %>">
+          <th scope="row">
+            <%- currentWorkout.date.toLocaleDateString('en-US', { weekday:
+            'long', year: 'numeric', month: 'long', day: 'numeric', ordinal:
+            'auto', hour: 'numeric', minute: 'numeric' }) %>
+          </th>
+
+          <td>
+            <form
+              method="POST"
+              action="/profile/workoutsDelete/<%- currentWorkout._id %>"
+              id="delete-workout-form-<%- currentWorkout._id %>"
+            >
+              <button type="submit" class="delete-workout-button">Ｘ</button>
+            </form>
+          </td>
+        </tr>
+        <% } %> <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<br />
+
+<dialog id="pop-up">
+  <form
+    name="profile"
+    action="/profile"
+    method="post"
+    enctype="multipart/form-data"
+  >
+    <h3>Edit Profile</h3>
+    <input type="hidden" name="userId" value="<%- loggedInUser._id %>" />
+    <label for="username" class="edit-input">
+      <p>Username:</p>
+      <input
+        type="text"
+        name="username"
+        pattern="[A-Za-z0-9_]{3,20}"
+        title="Username must be 3-20 characters long and contain only letters, numbers, and underscores."
+        value="<%- loggedInUser.username %>"
+        required
+        class="form-control"
+      />
+    </label>
+    <label for="password" class="edit-input">
+      <p>Password:</p>
+      <input
+        type="password"
+        name="password"
+        pattern="(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}"
+        title="Password must be at least 8 characters long, and contain at least one letter and one number."
+        placeholder="********"
+        class="form-control"
+      />
+    </label>
+    <label for="email">
+      <p>Email:</p>
+      <input
+        type="email"
+        name="email"
+        pattern="[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}"
+        title="Please enter a valid email address."
+        required
+        value="<%- loggedInUser.email %>"
+        class="form-control"
+      />
+    </label>
+    <label for="age">
+      <p>Age:</p>
+      <input
+        type="number"
+        name="age"
+        min="0"
+        value="<%- loggedInUser.age %>"
+        class="form-control"
+      />
+    </label>
+    <% if (loggedInUser.gender === "male") { %>
+    <label class="gender-label" for="gender">
+      <p>Gender:</p>
+      <input type="radio" name="gender" value="male" checked />Male
+      <input type="radio" name="gender" value="female" />Female
+      <input type="radio" name="gender" value="other" />Other
+    </label>
+    <% } else if (loggedInUser.gender === "female") { %>
+    <label class="gender-label" for="gender">
+      <p>Gender:</p>
+      <input type="radio" name="gender" value="male" />Male
+      <input type="radio" name="gender" value="female" checked />Female
+      <input type="radio" name="gender" value="other" />Other
+    </label>
+    <% } else if (loggedInUser.gender === "other") { %>
+    <label class="gender-label" for="gender">
+      <p>Gender:</p>
+      <input type="radio" name="gender" value="male" />Male
+      <input type="radio" name="gender" value="female" />Female
+      <input type="radio" name="gender" value="other" checked />Other
+    </label>
+    <% } else{ %>
+    <label for="gender">
+      <p>Gender:</p>
+      <input type="radio" name="gender" value="male" />Male
+      <input type="radio" name="gender" value="female" />Female
+      <input type="radio" name="gender" value="other" />Other
+    </label>
+    <% }%>
+    <label for="weight">
+      <p>Weight:</p>
+      <input
+        type="number"
+        name="weight"
+        min="0"
+        value="<%- loggedInUser.weight %>"
+        class="form-control"
+      />
+    </label>
+    <label for="height">
+      <p>Height:</p>
+      <input
+        type="number"
+        name="height"
+        min="0"
+        value="<%- loggedInUser.height %>"
+        class="form-control"
+      />
+    </label>
+    <label for="bio">
+      <p>Bio:</p>
+      <textarea name="bio" id="bio" cols="50" rows="2" class="form-control">
+  <%- loggedInUser.bio %></textarea
+      >
+    </label>
+    <label for="imageUrl">
+      <p>Profile Pic:</p>
+      <input type="file" name="imageUrl" accept="image/png, image/jpg" />
+    </label>
+    <br />
+    <div class="button-group">
+      <button type="submit" class="btn-primary">Submit</button>
+      <button type="reset" class="btn-primary">Reset</button>
+      <button value="cancel" formmethod="dialog" class="btn-primary">
+        Cancel
+      </button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="workout-modal">
+  <h3>Workout Details</h3>
+  <div id="workout-modal-content">
+    <!-- Workout information will be inserted here -->
+  </div>
+  <button id="workout-modal-close">Close</button>
+</dialog>
+
+<script src="/js/profile.js"></script>
