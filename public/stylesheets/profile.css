@@ -54,7 +54,7 @@
 
 .personalInfo-stats {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
   font-weight: bold;
   color: #fff;
   background-color: #fbb03b;
