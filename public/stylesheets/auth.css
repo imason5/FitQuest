@@ -7,6 +7,10 @@
   align-items: center;
   text-align: center;
 }
+
+#login h1 {
+  font-weight: bold;
+}
 /*.container {
   --bs-gutter-x: 0;
 }*/

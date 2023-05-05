@@ -17,17 +17,22 @@
       </button>
     </div>
     <div class="personalInfo-text-box">
-      <ul class="personalInfo-texts">
-        <li class="personalInfo-username">
-          Hello, <%- loggedInUser.username %>!
-        </li>
-        <li>Email: <%- loggedInUser.email %></li>
-        <li>Age: <%- loggedInUser.age %></li>
-        <li>Gender: <%- loggedInUser.gender %></li>
-        <li>Weight: <%- loggedInUser.weight %></li>
-        <li>Height: <%- loggedInUser.height %></li>
-        <li>Bio: <%- loggedInUser.bio %></li>
-      </ul>
+      <div class="personalInfo-username">
+        Hello, <span><%- loggedInUser.username %>!</span>
+      </div>
+      <div class="personalInfo-bio">
+        <span>About:</span> <%- loggedInUser.bio %>
+      </div>
+      <div class="personalInfo-stats">
+        <span><%- loggedInUser.age %> |</span>
+        <span><%- loggedInUser.height %>cm |</span>
+        <span><%- loggedInUser.weight %>kg |</span>
+        <span
+          ><%- loggedInUser.gender.charAt(0).toUpperCase() +
+          loggedInUser.gender.slice(1) %></span
+        >
+      </div>
+
       <p class="warning-texts">
         <%- typeof errorMessage !== 'undefined' ? errorMessage : "" %>
       </p>
@@ -170,8 +175,16 @@
     </label>
     <label for="bio">
       <p>Bio:</p>
-      <textarea name="bio" id="bio" cols="50" rows="2" class="form-control">
-  <%- loggedInUser.bio %></textarea
+      <textarea
+        name="bio"
+        id="bio"
+        cols="50"
+        rows="2"
+        maxlength="200"
+        class="form-control"
+      >
+    <%- loggedInUser.bio %>
+  </textarea
       >
     </label>
     <label for="imageUrl">
@@ -201,5 +214,9 @@
   </div>
   <button id="workout-modal-close">Close</button>
 </dialog>
+
+<div id="add-workout-btn-container">
+  <a href="/workout" id="add-workout-btn">+</a>
+</div>
 
 <script src="/js/profile.js"></script>
