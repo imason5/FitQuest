@@ -70,9 +70,9 @@ To summarize:
 - Contains the routes for the application, separated by concern.
 
 - auth.routes.js: authentication (sign up, log in, log out).
-  -profile.routes.js: routes for user profile page.
-  -session.routes.js: routes for session management (check if user is logged in, redirect to login page if not).
-  -workout.routes.js: routes for workout data (create, edit, delete, view).
+- profile.routes.js: routes for user profile page
+- session.routes.js: routes for session management (check if user is logged in, redirect to login page if not).
+- workout.routes.js: routes for workout data (create, edit, delete, view).
 
 #### middleware/
 
