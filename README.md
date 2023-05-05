@@ -2,8 +2,9 @@
 
 <b>[Click here to see deployed project](https://fitness-tracker.adaptable.app/)</b>
 
-<img src="/public/images/forReadme.png" style=" width:500px ; height:500px "  >
-
+<p align="center">
+<img  src="/public/images/forReadme.png" style=" width:400x ; height:600px "  >
+</p>
 <hr>
 
 ## Description
