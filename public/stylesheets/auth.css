@@ -48,10 +48,20 @@
 .signup-input {
   width: 80vw;
   height: 3rem;
+  display: flex;
 }
 .login-hint {
   position: absolute;
   bottom: -1rem;
   color: grey;
   text-align: center;
+}
+
+.signup-gender {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.signup-form label {
+  margin-bottom: 1rem;
 }
